@@ -1,11 +1,11 @@
 #Final project: Click Per Minute Game
 
-#importing pygame and button class
+#importing/initializing pygame and button class
 import pygame
+pygame.init()
 from classes import Button
 
-#initializing pygame and its window
-pygame.init()
+#initializing pygame's window
 screen = pygame.display.set_mode((2560, 1375))
 screen.fill((255,255,255))
 
@@ -22,7 +22,7 @@ font = pygame.font.SysFont('Arial', 30)
 
 
 #function for the clicks per miute game
-def cpm():
+def cpm(username):
     #set the run variable to true to have a while True loop
     run = True
 
@@ -30,7 +30,7 @@ def cpm():
     font = pygame.font.SysFont('Arial', 30)
 
     #variable for tracking time in seconds
-    seconds_left = 60
+    seconds_left = 2
 
     #variables for clicks
     clicks = 0
@@ -64,20 +64,82 @@ def cpm():
         screen.blit(time_surface, (2250,10))
         screen.blit(clicks_surface, (10,10))
 
-        pygame.display.flip()        
+        #updates screen
+        pygame.display.flip()    
+
+        #frame rate    
         clock.tick(60)
+
+        #if the time is up
         if seconds_left == 0:
+            #clear screen
             screen.fill((255,255,255))
+            pygame.display.flip()
             break
+
+    #list for all buttons
+    cpm_buttons = []
+
+    #leaderboard button and add it to a list of all buttons
+    cpmleaderboard = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
+    cpm_buttons.append(cpmleaderboard)
 
     #after game loop
     while run:
         #clear screen
         screen.fill((255,255,255))
 
+        #setting to not breakout yet
+        breakout = False
+
+        #checking events
+        for event in pygame.event.get():
+            #checking if user wants to quit using X button
+            if event.type == pygame.QUIT:\
+                #quit
+                run = False
+            
+            #checking events of buttons
+            for button in cpm_buttons:
+                returnvalue = button.handle_event(event)
+                if returnvalue == "clicked!":
+                    breakout = True
+                    break
+            if breakout:
+                break
+        
+        #if user is going to leaderboard:
+        if breakout:
+            gotoleaderboard = True
+            break
+
+        #drawing buttons 
+        for button in cpm_buttons:
+            button.draw(screen)
+
+        #update screen
+        pygame.display.flip()
+
+        #frame_rate
+        clock.tick(60)
+
+    #going to leaderboard loop
+    while run:
+        #clear screen
+        screen.fill((255,255,255))
+
+        #show leaderboard!
+        #----------------------------
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
+        #updating displays
+        pygame.display.flip()
 
-cpm()
+        #setting frame_rate
+        clock.tick(60)
+
+#calling of clicks per minute function (remove at the end!)
+cpm(None)

@@ -8,11 +8,10 @@ font = pygame.font.Font(None, 36)
 
 #class for buttons
 class Button:
-    def __init__(self, x, y, width, height, text, color, hover_color, num):
+    def __init__(self, x, y, width, height, text, color, hover_color):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.color = color
-        self.num = num
         self.hover_color = hover_color
         self.is_hovered = False
 
@@ -28,5 +27,4 @@ class Button:
             self.is_hovered = self.rect.collidepoint(event.pos)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.is_hovered:
-                self.num += 1
-                print(self.num)
+                return "clicked!"
