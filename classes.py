@@ -30,3 +30,4 @@ class Button:
         if mouse_click[0] and self.rect.collidepoint(pygame.mouse.get_pos()): 
             return True 
         return False
+
