@@ -30,7 +30,7 @@ def cpm(username):
     font = pygame.font.SysFont('Arial', 30)
 
     #variable for tracking time in seconds
-    seconds_left = 2
+    seconds_left = 60
 
     #variables for clicks
     clicks = 0
