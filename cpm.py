@@ -30,7 +30,7 @@ def cpm(username):
     font = pygame.font.SysFont('Arial', 30)
 
     #variable for tracking time in seconds
-    seconds_left = 60
+    seconds_left = 2
 
     #variables for clicks
     clicks = 0
@@ -101,8 +101,8 @@ def cpm(username):
             
             #checking events of buttons
             for button in cpm_buttons:
-                returnvalue = button.handle_event(event)
-                if returnvalue == "clicked!":
+                returnvalue = button.is_clicked()
+                if returnvalue:
                     breakout = True
                     break
             if breakout:
