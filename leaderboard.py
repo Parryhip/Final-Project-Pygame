@@ -4,7 +4,7 @@
 import csv
 
 #function to input a score
-def input_score(username, score, position):
+def input_score(username, position, score):
     #finds the username line
     with open("high_scores.csv", "r") as file:
         #initializes csv reader
@@ -21,17 +21,15 @@ def input_score(username, score, position):
         #lines to rewrite
         lines = []
 
+    with open("high_scores.csv", "r") as file:
         #initializes csv reader (again)
         csvreader2 = csv.reader(file)
         
         #saves the previous lines
         for line in csvreader2:
-            print(line)
             if line == previousline:
-                print("yes")
                 continue
             else:
-                print("gothere")
                 lines.append(",".join(line))
 
     #writes the new line
@@ -51,16 +49,22 @@ def input_score(username, score, position):
     with open("high_scores.csv", "w") as file:
         file.write("")
 
-    print(lines)
-
     #writes the new file
     with open("high_scores.csv", "a+") as file:
         for line in lines:
             file.write(line)
             file.write("\n")
 
-    
+#function to get a value
+def get_score(username, position):
+    with open("high_scores.csv", "r") as file:
+        #initializes csv reader
+        csvreader = csv.reader(file)
 
+        #iterates over the file to find the username line and get the target score at the postion
+        for line in csvreader:
+            if line[0] == username:
+                targetscore = line[position]
 
-#calling function ------REMOVE AT THE END--------
-input_score("tim", 700, 1)
+        #returns target score
+        return targetscore
