@@ -55,7 +55,7 @@ def input_score(username, position, score):
             file.write(line)
             file.write("\n")
 
-#function to get a value
+#function to get a score for a user
 def get_score(username, position):
     with open("high_scores.csv", "r") as file:
         #initializes csv reader
@@ -68,3 +68,29 @@ def get_score(username, position):
 
         #returns target score
         return targetscore
+
+#function to get the leaderboard for a game
+def get_leaderboard(position):
+    with open("high_scores.csv", "r") as file:
+        #initializes csv reader
+        csvreader = csv.reader(file)
+
+        #skips header
+        next(csvreader)
+
+        #list of all scores with username association
+        scores = []
+
+        #iterates over file to get the scores for the leaderboard
+        for line in csvreader:
+            scores.append(f"{line[0]}: {line[position]}")
+            print(f"{line[0]}: {line[position]}")
+            print(f"{line[0]}: {line[position]}".split())
+        #returns list of strings of usernames associated with scores
+        #return sorted(scores, key=int((": ".split(scores))[1]))
+
+num = 1
+
+for score in get_leaderboard(1):
+    print(f"{num}. {score}")
+    num +=1
