@@ -5,6 +5,10 @@ import pygame
 pygame.init()
 from classes import Button
 
+#importing csv
+import csv
+
+
 #initializing pygame's window
 screen = pygame.display.set_mode((2560, 1375))
 screen.fill((255,255,255))
@@ -84,6 +88,9 @@ def cpm(username):
     cpmleaderboard = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
     cpm_buttons.append(cpmleaderboard)
 
+    #adding the new score
+    
+
     #after game loop
     while run:
         #clear screen
@@ -95,7 +102,7 @@ def cpm(username):
         #checking events
         for event in pygame.event.get():
             #checking if user wants to quit using X button
-            if event.type == pygame.QUIT:\
+            if event.type == pygame.QUIT:
                 #quit
                 run = False
             
@@ -128,12 +135,44 @@ def cpm(username):
         #clear screen
         screen.fill((255,255,255))
 
+        #cpm_scores
+        scores_for_cpm = []
+
+        #score surfaces
+        scoresurfaces = []
+
         #show leaderboard!
-        #----------------------------
+        with open("high_scores.csv", "r") as file:
+            csvreader = csv.reader(file)
+            next(csvreader)
+            for line in csvreader:
+                scores_for_cpm.append((line[0], line[1]))
+            
+            #title
+            cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+            
+            #surfaces
+            title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+
+            num = 1
+
+            for score in scores_for_cpm:
+                scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+                num += 1
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        #variable for showing first score
+        position = (1000, 1100)
+
+        #surface showing
+        screen.blit(title_surface, (1000, 1000))
+        for surface in scoresurfaces:
+            screen.blit(surface, position)
+            position = (1000, position[1] + 30)
 
         #updating displays
         pygame.display.flip()
