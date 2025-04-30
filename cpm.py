@@ -34,7 +34,7 @@ def cpm(username):
     font = pygame.font.SysFont('Arial', 30)
 
     #variable for tracking time in seconds
-    seconds_left = 2
+    seconds_left = 60
 
     #variables for clicks
     clicks = 0
@@ -86,7 +86,7 @@ def cpm(username):
 
     #initilaizing buttons and add them to the list of all buttons
     cpmleaderboardbutton = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
-    go_back_to_main_screen = Button(50, 1150, 250, 125, "Go Back to Game Selection", "green", "blue")
+    go_back_to_main_screen = Button(50, 1150, 250, 125, "Game Selection", "green", "blue")
     cpm_buttons.append(cpmleaderboardbutton)
     cpm_buttons.append(go_back_to_main_screen)
 
