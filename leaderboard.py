@@ -83,14 +83,16 @@ def get_leaderboard(position):
 
         #iterates over file to get the scores for the leaderboard
         for line in csvreader:
-            scores.append(f"{line[0]}: {line[position]}")
+            scores.append((line[0], line[position]))
             print(f"{line[0]}: {line[position]}")
             print(f"{line[0]}: {line[position]}".split())
-        #returns list of strings of usernames associated with scores
-        #return sorted(scores, key=int((": ".split(scores))[1]))
 
-num = 1
+        #if the game is the reaction speed game, the lowest score is the best (the lowest time that they reacted)
+        if position == 5: 
+            reverseornot = False
+        else:
+            reverseornot = True
 
-for score in get_leaderboard(1):
-    print(f"{num}. {score}")
-    num +=1
+        scores.sort(key= lambda x: float(x[1]), reverse=reverseornot)
+
+        return scores
