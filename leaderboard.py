@@ -21,6 +21,10 @@ def input_score(username, position, score):
         #lines to rewrite
         lines = []
 
+    #checks if the score even needs to be updated, if it doesn't, just don't do anything
+    if score <= int(previousline[position]):
+        return
+
     with open("high_scores.csv", "r") as file:
         #initializes csv reader (again)
         csvreader2 = csv.reader(file)
@@ -84,8 +88,6 @@ def get_leaderboard(position):
         #iterates over file to get the scores for the leaderboard
         for line in csvreader:
             scores.append((line[0], line[position]))
-            print(f"{line[0]}: {line[position]}")
-            print(f"{line[0]}: {line[position]}".split())
 
         #if the game is the reaction speed game, the lowest score is the best (the lowest time that they reacted)
         if position == 5: 
