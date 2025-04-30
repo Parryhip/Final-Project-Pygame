@@ -40,7 +40,7 @@ def sign_in():
     sign_up_button = Button(1000, 1150, 250, 125, "Create New Account", "green", "blue")
 
     #textbox
-    usr_inp_rect = pygame.Rect(200, 400, 320, 50)
+    usr_inp_rect = pygame.Rect(1280, 687, 320, 50)
 
     #clear the user's test
     usr_txt = ""
