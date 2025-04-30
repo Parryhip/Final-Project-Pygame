@@ -1,13 +1,13 @@
 #Final project: Click Per Minute Game
 
-#importing/initializing pygame and button class
+#importing/initializing pygame, button class, and getting leaderboard functions
 import pygame
 pygame.init()
 from classes import Button
+from leaderboard import *
 
 #importing csv
 import csv
-
 
 #initializing pygame's window
 screen = pygame.display.set_mode((2560, 1375))
@@ -84,12 +84,12 @@ def cpm(username):
     #list for all buttons
     cpm_buttons = []
 
-    #leaderboard button and add it to a list of all buttons
-    cpmleaderboard = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
-    cpm_buttons.append(cpmleaderboard)
+    #initilaizing buttons and add them to the list of all buttons
+    cpmleaderboardbutton = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
+    go_back_to_main_screen = Button(50, 1150, 250, 125, "Go Back to Game Selection", "green", "blue")
+    cpm_buttons.append(cpmleaderboardbutton)
+    cpm_buttons.append(go_back_to_main_screen)
 
-    #adding the new score
-    
 
     #after game loop
     while run:
@@ -110,7 +110,10 @@ def cpm(username):
             for button in cpm_buttons:
                 returnvalue = button.is_clicked()
                 if returnvalue:
-                    breakout = True
+                    if button == go_back_to_main_screen:
+                        return
+                    else:
+                        breakout = True
                     break
             if breakout:
                 break
@@ -130,49 +133,63 @@ def cpm(username):
         #frame_rate
         clock.tick(60)
 
+    
+    #getting the old cpm score for comparison
+    get_score(username, 1)
+
+    #inputting the new score
+    input_score(username, 1, clicks)
+
+    #getting the leaderboard
+    cpmleaderboard = get_leaderboard(1)
+
+    #removing the old buttons except for the going back to main screen button
+    cpm_buttons.clear()
+    cpm_buttons.append(go_back_to_main_screen)
+
     #going to leaderboard loop
     while run:
         #clear screen
         screen.fill((255,255,255))
 
-        #cpm_scores
-        scores_for_cpm = []
-
         #score surfaces
         scoresurfaces = []
 
         #show leaderboard!
-        with open("high_scores.csv", "r") as file:
-            csvreader = csv.reader(file)
-            next(csvreader)
-            for line in csvreader:
-                scores_for_cpm.append((line[0], line[1]))
-            
-            #title
-            cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
-            
-            #surfaces
-            title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+        cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+        
+        #surfaces
+        title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
 
-            num = 1
+        num = 1
 
-            for score in scores_for_cpm:
-                scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
-                num += 1
+        for score in cpmleaderboard:
+            scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+            num += 1
 
 
         for event in pygame.event.get():
+            #checing if the user clicked the X button
             if event.type == pygame.QUIT:
                 run = False
+            #checking events of buttons
+            for button in cpm_buttons:
+                returnvalue = button.is_clicked()
+                if returnvalue:
+                    if button == go_back_to_main_screen:
+                        return
 
         #variable for showing first score
-        position = (1000, 1100)
+        position = (1000, 500)
 
         #surface showing
-        screen.blit(title_surface, (1000, 1000))
+        screen.blit(title_surface, (1000, 470))
         for surface in scoresurfaces:
             screen.blit(surface, position)
             position = (1000, position[1] + 30)
+
+        for button in cpm_buttons:
+            button.draw(screen)
 
         #updating displays
         pygame.display.flip()
@@ -181,4 +198,4 @@ def cpm(username):
         clock.tick(60)
 
 #calling of clicks per minute function (remove at the end!)
-cpm(None)
+cpm("tim")

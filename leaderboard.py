@@ -21,6 +21,10 @@ def input_score(username, position, score):
         #lines to rewrite
         lines = []
 
+    #checks if the score even needs to be updated, if it doesn't, just don't do anything
+    if score <= int(previousline[position]):
+        return
+
     with open("high_scores.csv", "r") as file:
         #initializes csv reader (again)
         csvreader2 = csv.reader(file)
@@ -55,7 +59,7 @@ def input_score(username, position, score):
             file.write(line)
             file.write("\n")
 
-#function to get a value
+#function to get a score for a user
 def get_score(username, position):
     with open("high_scores.csv", "r") as file:
         #initializes csv reader
@@ -68,3 +72,29 @@ def get_score(username, position):
 
         #returns target score
         return targetscore
+
+#function to get the leaderboard for a game
+def get_leaderboard(position):
+    with open("high_scores.csv", "r") as file:
+        #initializes csv reader
+        csvreader = csv.reader(file)
+
+        #skips header
+        next(csvreader)
+
+        #list of all scores with username association
+        scores = []
+
+        #iterates over file to get the scores for the leaderboard
+        for line in csvreader:
+            scores.append((line[0], line[position]))
+
+        #if the game is the reaction speed game, the lowest score is the best (the lowest time that they reacted)
+        if position == 5: 
+            reverseornot = False
+        else:
+            reverseornot = True
+
+        scores.sort(key= lambda x: float(x[1]), reverse=reverseornot)
+
+        return scores
