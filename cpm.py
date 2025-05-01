@@ -207,4 +207,4 @@ def cpm(username):
         clock.tick(60)
 
 #calling of clicks per minute function (remove at the end!)
-cpm("conner")
+cpm("samuel")

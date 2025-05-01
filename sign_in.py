@@ -5,10 +5,11 @@ import pygame
 from leaderboard import *
 from classes import Button
 
-#initializing screen, and pygame 
+#initializing screen, and pygame
 pygame.init()
 screen = pygame.display.set_mode((2560, 1375))
 screen.fill((255,255,255))
+normal_font = pygame.font.SysFont("Arial", 32)
 
 #Allow holding keys
 pygame.key.set_repeat(300, 30) 
@@ -23,7 +24,7 @@ pygame.time.set_timer(time_event, 1000)
 #variable to run the main loop
 run = True
 
-#function to ge thte best size of font for a textbox
+#function to ge thte best size of font for the textbox
 def get_best_font(text, max_width, max_height, max_font_size=45, min_font_size=10):
     for font_size in range(max_font_size, min_font_size - 1, -1):
         font = pygame.font.Font(None, font_size)
@@ -36,41 +37,232 @@ def get_best_font(text, max_width, max_height, max_font_size=45, min_font_size=1
 def sign_in():
     #buttons for choices
     buttons = []
-    sign_in_button = Button(1000, 1150, 250, 125, "Sign In", "green", "blue")
-    sign_up_button = Button(1000, 1150, 250, 125, "Create New Account", "green", "blue")
+    sign_in_button = Button(500, 1150, 250, 125, "Sign In", "green", "blue")
+    sign_up_button = Button(1500, 1150, 250, 125, "Create New Account", "green", "blue")
 
-    #textbox
-    usr_inp_rect = pygame.Rect(1280, 687, 320, 50)
+    #add buttons to the list
+    buttons.append(sign_in_button)
+    buttons.append(sign_up_button)
 
-    #clear the user's test
-    usr_txt = ""
+    #setting not to break yet or go to the sign_in/sign_up steps
+    signin = False
+    signup = False
+    breakout = False
 
+    #loop for button selections
     while run:
+        #clear screen
+        screen.fill((255,255,255))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    usr_txt = usr_txt[:-1]
-                elif event.key == pygame.K_RETURN:
-                    print("Entered text:", usr_txt)
-                    usr_txt = ''
-                else:
-                    usr_txt += event.unicode
+            for button in buttons:
+                if button.is_clicked():
+                    if button == sign_in_button:
+                        signin = True
+                        breakout = True
+                        break
+                    elif button == sign_up_button:
+                        signup = True
+                        breakout = True
+                        break
+            if breakout:
+                break
+        if breakout:
+            break
 
-        #Clear screen
-        screen.fill((255, 255, 255))
-        pygame.draw.rect(screen, "yellow", usr_inp_rect)
+        #drawing buttons
+        for button in buttons:
+            button.draw(screen)
 
-        #getting the font size
-        font = get_best_font(usr_txt, usr_inp_rect.w - 10, usr_inp_rect.h - 10)
-
-        #rendering things on screen
-        txt_surface = font.render(usr_txt, True, "black")
-        screen.blit(txt_surface, (usr_inp_rect.x + 5, usr_inp_rect.y + 5))
-
-        #updating screen
+        #update screen
         pygame.display.flip()
 
+        #frame rate
+        clock.tick(60)
+
+
+    #textbox
+    usr_inp_rect = pygame.Rect(0,0, 320, 50)
+
+    #centering textbox
+    usr_inp_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
+
+    #clear the user's textbox
+    usr_txt = ""
+
+    #text to show where to input stuff
+    usernametitle = "Username:"
+    passwordtitle = "Password:"
+    newusernametitle = "Create new username:"
+    newpasswordtitle = "Create new password:"
+
+    if signin:
+        username_rect = pygame.Rect(screen.get_width() // 2 - 160, 600, 320, 50)
+        password_rect = pygame.Rect(screen.get_width() // 2 - 160, 700, 320, 50)
+
+        username_active = False
+        password_active = False
+
+        username_text = ""
+        password_text = ""
+
+        cursor_visible = True
+        cursor_timer = 0
+        cursor_interval = 500  # milliseconds
+
+        while run:
+            dt = clock.tick(60)
+            cursor_timer += dt
+            if cursor_timer >= cursor_interval:
+                cursor_visible = not cursor_visible
+                cursor_timer = 0
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if username_rect.collidepoint(event.pos):
+                        username_active = True
+                        password_active = False
+                    elif password_rect.collidepoint(event.pos):
+                        password_active = True
+                        username_active = False
+                    else:
+                        username_active = False
+                        password_active = False
+
+                if event.type == pygame.KEYDOWN:
+                    if username_active:
+                        if event.key == pygame.K_BACKSPACE:
+                            username_text = username_text[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            inputtedusername = username_text
+                        else:
+                            username_text += event.unicode
+                    elif password_active:
+                        if event.key == pygame.K_BACKSPACE:
+                            password_text = password_text[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            inputtedpassword = password_text
+                        else:
+                            password_text += event.unicode
+
+            #draw everything
+            screen.fill((255, 255, 255))
+
+            #labels
+            screen.blit(normal_font.render(usernametitle, True, "black"), (username_rect.x - 250, username_rect.y + 10))
+            screen.blit(normal_font.render(passwordtitle, True, "black"), (password_rect.x - 250, password_rect.y + 10))
+
+            #Draw input boxes
+            pygame.draw.rect(screen, "yellow", username_rect, 0 if username_active else 2)
+            pygame.draw.rect(screen, "yellow", password_rect, 0 if password_active else 2)
+
+            #get best fonts using your function
+            font_username = get_best_font(username_text, username_rect.w - 10, username_rect.h - 10)
+            font_password = get_best_font("*" * len(password_text), password_rect.w - 10, password_rect.h - 10)
+
+            #render text
+            screen.blit(font_username.render(username_text, True, "black"), (username_rect.x + 5, username_rect.y + 5))
+            screen.blit(font_password.render("*" * len(password_text), True, "black"), (password_rect.x + 5, password_rect.y + 5))
+
+            #blinking cursor
+            if cursor_visible:
+                if username_active:
+                    cursor_x = font_username.size(username_text)[0] + username_rect.x + 5
+                    pygame.draw.line(screen, "black", (cursor_x, username_rect.y + 5), (cursor_x, username_rect.y + username_rect.h - 5), 2)
+                elif password_active:
+                    cursor_x = font_password.size("*" * len(password_text))[0] + password_rect.x + 5
+                    pygame.draw.line(screen, "black", (cursor_x, password_rect.y + 5), (cursor_x, password_rect.y + password_rect.h - 5), 2)
+
+            pygame.display.flip()
+
+
+    if signup:
+        username_rect = pygame.Rect(screen.get_width() // 2 - 160, 600, 320, 50)
+        password_rect = pygame.Rect(screen.get_width() // 2 - 160, 700, 320, 50)
+
+        username_active = False
+        password_active = False
+
+        username_text = ""
+        password_text = ""
+
+        cursor_visible = True
+        cursor_timer = 0
+        cursor_interval = 500  # milliseconds
+
+        while run:
+            dt = clock.tick(60)
+            cursor_timer += dt
+            if cursor_timer >= cursor_interval:
+                cursor_visible = not cursor_visible
+                cursor_timer = 0
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if username_rect.collidepoint(event.pos):
+                        username_active = True
+                        password_active = False
+                    elif password_rect.collidepoint(event.pos):
+                        password_active = True
+                        username_active = False
+                    else:
+                        username_active = False
+                        password_active = False
+
+                if event.type == pygame.KEYDOWN:
+                    if username_active:
+                        if event.key == pygame.K_BACKSPACE:
+                            username_text = username_text[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            inputtedusername = username_text
+                        else:
+                            username_text += event.unicode
+                    elif password_active:
+                        if event.key == pygame.K_BACKSPACE:
+                            password_text = password_text[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            inputtedpassword = password_text
+                        else:
+                            password_text += event.unicode
+
+            #draw everything
+            screen.fill((255, 255, 255))
+
+            #labels
+            screen.blit(normal_font.render(usernametitle, True, "black"), (username_rect.x - 250, username_rect.y + 10))
+            screen.blit(normal_font.render(passwordtitle, True, "black"), (password_rect.x - 250, password_rect.y + 10))
+
+            #Draw input boxes
+            pygame.draw.rect(screen, "yellow", username_rect, 0 if username_active else 2)
+            pygame.draw.rect(screen, "yellow", password_rect, 0 if password_active else 2)
+
+            #get best fonts using your function
+            font_username = get_best_font(username_text, username_rect.w - 10, username_rect.h - 10)
+            font_password = get_best_font("*" * len(password_text), password_rect.w - 10, password_rect.h - 10)
+
+            #render text
+            screen.blit(font_username.render(username_text, True, "black"), (username_rect.x + 5, username_rect.y + 5))
+            screen.blit(font_password.render("*" * len(password_text), True, "black"), (password_rect.x + 5, password_rect.y + 5))
+
+            #blinking cursor
+            if cursor_visible:
+                if username_active:
+                    cursor_x = font_username.size(username_text)[0] + username_rect.x + 5
+                    pygame.draw.line(screen, "black", (cursor_x, username_rect.y + 5), (cursor_x, username_rect.y + username_rect.h - 5), 2)
+                elif password_active:
+                    cursor_x = font_password.size("*" * len(password_text))[0] + password_rect.x + 5
+                    pygame.draw.line(screen, "black", (cursor_x, password_rect.y + 5), (cursor_x, password_rect.y + password_rect.h - 5), 2)
+
+            pygame.display.flip()
 
 sign_in()
