@@ -1,1 +1,5 @@
-username, cpm score, tic tac toe score, platformer score, reaction speed score, pong score
+username,cpm,tictactoe,platformer,pong,reactionspeed
+tom,700,5,5,5,0.9
+tam,700,8,5,5,0.75
+tum,700,9,5,5,0.1
+tim,12,52,5,5,1
