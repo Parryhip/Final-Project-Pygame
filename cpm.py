@@ -25,7 +25,7 @@ font = pygame.font.SysFont('Arial', 30)
 
 
 
-#function for the clicks per miute game
+#function for the clicks per minute game
 def cpm(username):
     #set the run variable to true to have a while True loop
     run = True
@@ -86,9 +86,11 @@ def cpm(username):
 
     #initilaizing buttons and add them to the list of all buttons
     cpmleaderboardbutton = Button(2250, 1150, 250, 125, "Go to Leaderboard", "green", "blue")
+    play_again = Button(1100, 1150, 250, 125, "Play Again", "green", "blue")
     go_back_to_main_screen = Button(50, 1150, 250, 125, "Game Selection", "green", "blue")
     cpm_buttons.append(cpmleaderboardbutton)
     cpm_buttons.append(go_back_to_main_screen)
+    cpm_buttons.append(play_again)
 
 
     #after game loop
@@ -111,6 +113,9 @@ def cpm(username):
                 returnvalue = button.is_clicked()
                 if returnvalue:
                     if button == go_back_to_main_screen:
+                        return
+                    if button == play_again:
+                        cpm(username)
                         return
                     else:
                         breakout = True
@@ -146,6 +151,7 @@ def cpm(username):
     #removing the old buttons except for the going back to main screen button
     cpm_buttons.clear()
     cpm_buttons.append(go_back_to_main_screen)
+    cpm_buttons.append(play_again)
 
     #going to leaderboard loop
     while run:
@@ -178,6 +184,9 @@ def cpm(username):
                 if returnvalue:
                     if button == go_back_to_main_screen:
                         return
+                    if button == play_again:
+                        cpm(username)
+                        return
 
         #variable for showing first score
         position = (1000, 500)
@@ -198,4 +207,4 @@ def cpm(username):
         clock.tick(60)
 
 #calling of clicks per minute function (remove at the end!)
-cpm("tim")
+cpm("samuel")
