@@ -82,7 +82,7 @@ def main_loop():
     paddle_border = 7
 
     # Set the window title
-    pygame.display.set_caption("Blank Screen")
+    pygame.display.set_caption("Pong Game")
 
     ball = Circle(sw//2, sh//2, sh/45, generic_color)  # Example circle
     paddle_player = Paddle(screen, 50, sh//2, paddle_width, paddle_height, generic_color, 0.005, paddle_border)  # Example paddle
