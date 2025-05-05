@@ -2,19 +2,16 @@
 
 import pygame
 import random
+import math
 
 # TO DO:
 # - Add background (Dotted lines in middle, possible other details, check more later (gradient?))
 # - Add ball movement and collision detection
-# - Add player movement with ws or arrow keys
 # - Add intrustions in begining
 # - Add difficulty (maybe in beggining. At least add difficulty for AI)
 # - Figure out how to connect seperate files of pygame to oneanother seemlessly (exp: transitioning from game select to game with no xing out)
 # - Add AI paddle movement
 # - Add scoring system
-
-
-
 
 
 # Initialize Pygame
@@ -26,12 +23,15 @@ class Circle:
         self.y = y
         self.radius = radius
         self.color = color
+        self.direction = random.randint(1,360)
+        self.speed = 5
+        self.moving = False
 
     def draw(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
-    def update(self):
-        pass
+    def update(self,dt):
+        self.y = self.y + (dt * self.speed * math.sin(self.direction))
 
 class Paddle:
     def __init__(self, screen, x, y, width, height, color, smoothness, border=0):
@@ -62,8 +62,8 @@ class Paddle:
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height),border_radius=self.border)
 
     # Sets y value to position of mouse, but smoooooooth
-    def follow_mouse(self,mouse_y,dt):
-        self.y = self.y + ((mouse_y - (self.height // 2))-self.y)*self.smoothness*dt  # Center the paddle vertically based on mouse Y position
+    def follow_target(self,target_pos,dt):
+        self.y = self.y + ((target_pos - (self.height // 2))-self.y)*self.smoothness*dt  # Center the paddle vertically based on mouse Y position
 
 
 def main_loop():
@@ -81,35 +81,55 @@ def main_loop():
     generic_color = (255, 255, 255)  # White
     paddle_border = 7
 
+    # Initialize Useful Variables
+    player_movement_key = [False,1] # True if the player is holding down ws up down keys, Will be + or - depending on up or down
+
     # Set the window title
     pygame.display.set_caption("Pong Game")
 
     ball = Circle(sw//2, sh//2, sh/45, generic_color)  # Example circle
-    paddle_player = Paddle(screen, 50, sh//2, paddle_width, paddle_height, generic_color, 0.005, paddle_border)  # Example paddle
-    paddle_ai = Paddle(screen, sw-50, sh//2, paddle_width, paddle_height, generic_color, 0.005, paddle_border)  # Example AI paddle
+    paddle_player = Paddle(screen, 50, sh//2, paddle_width, paddle_height, generic_color, 0.006, paddle_border)  # Example paddle
+    paddle_ai = Paddle(screen, sw-50, sh//2, paddle_width, paddle_height, generic_color, 0.006, paddle_border)  # Example AI paddle
 
     # Game loop
     running = True
     while running:
+        # Get delta time / Beggining values
+        dt = clock.tick(240)
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                    player_movement_key[0] = True
+                    player_movement_key[1] = 1
+                if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    player_movement_key[0] = True
+                    player_movement_key[1] = -1
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                    player_movement_key[0] = False
+                    player_movement_key[1] = 1
+                if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    player_movement_key[0] = False
+                    player_movement_key[1] = -1
 
-        # Get the delta time
-        dt = clock.tick(240)  # Limit to 240 FPS
+        if player_movement_key[0] == True:
+            paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * player_movement_key[1],dt)
+        else:
+            # If screen is left clicked (held down):
+            if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
+                paddle_player.follow_target(mouse_y,dt)  # Update paddle position based on mouse Y position
 
-        # Get mouse position
-        mouse_x, mouse_y = pygame.mouse.get_pos()
+        # Update the ball
+        ball.update(dt)
 
-        mouse_buttons = pygame.mouse.get_pressed()
-        if mouse_buttons[0]:  # Left mouse button pressed
-            paddle_player.follow_mouse(mouse_y,dt)  # Update paddle position based on mouse Y position
-
-        # Fill the screen with a color (optional)
+        # Fill the screen with a color
         screen.fill((20, 20, 25))  # Black
-
-        
 
         # Draw the ball and paddles
         ball.draw(screen)
