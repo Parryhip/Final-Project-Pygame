@@ -11,6 +11,8 @@ import math
 # - Figure out how to connect seperate files of pygame to oneanother seemlessly (exp: transitioning from game select to game with no xing out)
 # - Add scoring system
 # - Add player easyness (paddle collision size slighly bigger than paddle size)
+# - Add 3 seconds before game starts (maybe add a countdown?)
+# - Add a pause button (maybe esc key?)
 
 # Initialize Pygame
 pygame.init()
