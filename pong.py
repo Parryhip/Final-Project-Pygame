@@ -186,6 +186,16 @@ def main_loop():
 
         # Draw everything
         screen.fill((20, 20, 25))  # Background color
+
+        # Draw the dotted line in the middle
+        line_color = (220, 220, 224)  # White color for the line
+        line_width = 5  # Width of each line segment
+        line_height = sh//27  # Height of each line segment
+        gap = sh//27  # Gap between line segments
+        for y in range(0, sh, line_height + gap):
+            pygame.draw.rect(screen, line_color, (sw // 2 - line_width // 2, y, line_width, line_height))
+
+        # Draw paddles and ball
         ball.draw(screen)
         paddle_player.draw(screen, dt)
         paddle_ai.draw(screen, dt)
