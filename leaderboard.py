@@ -101,5 +101,6 @@ def get_leaderboard(position):
     
 #function to input a new user
 def new_user(username):
-    with open("signin.txt", "a") as file:
-        pass
+    with open("high_scores.csv", "a") as file:
+        file.write("\n")
+        file.write(f"{username},0,0,0,0,0")

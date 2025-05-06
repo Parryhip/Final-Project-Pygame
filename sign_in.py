@@ -4,6 +4,7 @@
 import pygame
 from leaderboard import *
 from classes import Button
+import bcrypt
 
 #initializing screen, and pygame
 pygame.init()
@@ -32,6 +33,18 @@ def get_best_font(text, max_width, max_height, max_font_size=45, min_font_size=1
         if text_width <= max_width and text_height <= max_height:
             return font
     return pygame.font.Font(None, min_font_size)
+
+#function to check if username matches any of the ones in the files prior
+def check_username(username):
+    with open("signin.txt", "r") as file:
+        for line in file:
+            splitline = line.split(",")
+            if username == splitline[0]:
+                return False
+            else:
+                pass
+        
+        return True
 
 #function to sign in
 def sign_in():
@@ -211,6 +224,7 @@ def sign_in():
         displayerror1 = False
         displayerror2 = False
         displayerror3 = False
+        displayerror4 = False
 
         #don't breakout yet
         breakout = False
@@ -267,16 +281,24 @@ def sign_in():
                             if username_text == "" or password_text == "" or confpassword_text == "":
                                 displayerror3 = True
                             else:
-                                displayerror1 = False
-                                inputtedusername = username_text
-                                inputtedpassword = password_text
-                                confpassword = confpassword_text
-                                if password_text == confpassword:
-                                    
-                                    breakout = True
-                                    displayerror2 = False
+                                if check_username(username_text):
+                                    displayerror1 = False
+                                    inputtedusername = username_text
+                                    inputtedpassword = password_text
+                                    confpassword = confpassword_text
+                                    if password_text == confpassword:
+                                        breakout = True
+                                        displayerror2 = False
+                                    else:
+                                        displayerror1 = False
+                                        displayerror3 = False
+                                        displayerror4 = False
+                                        displayerror2 = True
                                 else:
-                                    displayerror2 = True
+                                    displayerror1 = False
+                                    displayerror3 = False
+                                    displayerror2 = False
+                                    displayerror4 = True
                         else:
                             confpassword_text += event.unicode
 
@@ -314,6 +336,8 @@ def sign_in():
                 screen.blit(normal_font.render("The passwords do not match!", True, "red"), (850, 320))
             elif displayerror3:
                 screen.blit(normal_font.render("One of the input fields is blank!", True, "red"), (850, 320))
+            elif displayerror4:
+                screen.blit(normal_font.render("Your username matches someone else's! Please choose a different one.", True, "red"), (850, 320))
 
             #blinking cursor
             if cursor_visible:
@@ -329,16 +353,43 @@ def sign_in():
 
             pygame.display.flip()
 
+        if signup:
+            new_user(inputtedusername)
+
+            #generate hashing salt
+            new_salt = bcrypt.gensalt()
+
+            #encrypt password
+            encryptedpassword = bcrypt.hashpw(inputtedpassword.encode("utf-8"), new_salt)
+
+            with open("signin.txt", "a") as file:
+                file.write("\n")
+                file.write(f"{inputtedusername},{encryptedpassword.decode("utf-8")},{new_salt.decode("utf-8")}")
+
         #if the user went through the sign up space
         if signup:
+            go_back_to_main = Button(500, 500, 300, 200, "Go to Game Selection", "green", "blue")
             while True:
+                #clear screen
                 screen.fill((255,255,255))
+                
+                #checking pygame events
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
 
-                screen.blit(normal_font.render("New account created successfully!", True, "black"), (screen.get_width // 2, screen.get_height // 2))
+                #diplaying that the user's account was created successfully
+                success = normal_font.render("New account created successfully!", True, "black")
+                success_rect = success.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+                screen.blit(success, success_rect)
 
+                if go_back_to_main.is_clicked():
+                    return inputtedusername
+                
+                go_back_to_main.draw(screen)
+                
+                #updating diplay
                 pygame.display.flip()
         
 sign_in()
+
