@@ -31,7 +31,7 @@ class Circle:
     def draw(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
-    def detect_collision_screen(self):
+    def detect_collision_screen(self, score):
         # Handle collision with the top and bottom of the screen
         if self.y < self.radius:  # Top of the screen
             self.y = self.radius
@@ -45,10 +45,14 @@ class Circle:
 
         # Handle collision with the left and right of the screen (scoring logic)
         if self.x < self.radius:  # Left of the screen
-            print("Player Lost")  # Player loses when ball goes off the left side
+            print(score)  # Player loses when ball goes off the left side
+            return True, score
 
         elif self.x > pygame.display.get_surface().get_width() - self.radius:  # Right of the screen
-            print("AI Lost")  # AI loses when ball goes off the right side
+            print(score + 1)  # AI loses when ball goes off the right side
+            return True, score + 1
+        
+        return False, score
 
     def detect_collision_paddle(self, paddle_player, paddle_ai):
         # Check collision with both paddles
@@ -71,14 +75,20 @@ class Circle:
                     self.direction += paddle_speed_influence
 
                     # Prevent ball from getting stuck in near-vertical angles
-                    if 85 < abs(self.direction % 360) < 95 or 265 < abs(self.direction % 360) < 275:
-                        self.direction += 10 if paddle_speed_influence > 0 else -10
+                    if 82 < abs(self.direction % 360) < 98 or 262 < abs(self.direction % 360) < 278:
+                        self.direction += 12 if paddle_speed_influence > 0 else -12
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
                     self.x = paddle.x + paddle.width + self.radius
                 else:
                     self.x = paddle.x - self.radius
+
+    def reset_ball(self, screen):
+        self.x = screen.get_width() // 2
+        self.y = screen.get_height() // 2
+        self.direction = random.choice([random.randint(-45, 45), random.randint(135, 235)])  # Random initial direction
+        self.speed = self.base_speed
 
     def update(self, dt):
         # Update ball position based on direction and speed
@@ -116,6 +126,9 @@ class Paddle:
         # Draw the paddle
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), border_radius=self.border)
 
+    def reset_paddle(self):
+        self.y = self.scrn_hei // 2
+
     def follow_target(self, target_pos, dt):
         # Smoothly move paddle towards the target position
         self.speed = ((target_pos - (self.height // 2)) - self.y) * self.smoothness
@@ -141,66 +154,83 @@ def main_loop():
     # Initialize ball and paddles
     ball = Circle(sw // 2, sh // 2, sh / 45, generic_color)
     paddle_player = Paddle(screen, 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.004, paddle_border)
+    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
 
     running = True
+    reset_game = True
+    paused_pong = False
+    scene = "pong"
+
+    score = 0
+
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        if reset_game == True:
+            ball.reset_ball(screen)
+            paddle_player.reset_paddle()
+            paddle_ai.reset_paddle()
+            reset_game = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
-            if event.type == pygame.KEYDOWN:
-                # Handle player movement keys
-                if event.key in [pygame.K_w, pygame.K_UP]:
-                    player_movement_key[0] = True
-                    player_movement_key[1] = 1
-                if event.key in [pygame.K_s, pygame.K_DOWN]:
-                    player_movement_key[0] = True
-                    player_movement_key[1] = -1
-            if event.type == pygame.KEYUP:
-                # Stop player movement when keys are released
-                if event.key in [pygame.K_w, pygame.K_UP]:
-                    player_movement_key[0] = False
-                    player_movement_key[1] = 1
-                if event.key in [pygame.K_s, pygame.K_DOWN]:
-                    player_movement_key[0] = False
-                    player_movement_key[1] = -1
+            if paused_pong == False:
+                if event.type == pygame.KEYDOWN:
+                    # Handle player movement keys
+                    if event.key in [pygame.K_w, pygame.K_UP]:
+                        player_movement_key[0] = True
+                        player_movement_key[1] = 1
+                    if event.key in [pygame.K_s, pygame.K_DOWN]:
+                        player_movement_key[0] = True
+                        player_movement_key[1] = -1
+                if event.type == pygame.KEYUP:
+                    # Stop player movement when keys are released
+                    if event.key in [pygame.K_w, pygame.K_UP]:
+                        player_movement_key[0] = False
+                        player_movement_key[1] = 1
+                    if event.key in [pygame.K_s, pygame.K_DOWN]:
+                        player_movement_key[0] = False
+                        player_movement_key[1] = -1
+                    
 
         # Update player paddle position
-        if player_movement_key[0]:
-            paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * player_movement_key[1], dt)
-        else:
-            if pygame.mouse.get_pressed()[0]:  # Allow mouse control
-                paddle_player.follow_target(mouse_y, dt)
+        if paused_pong == False:
+            if player_movement_key[0]:
+                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * player_movement_key[1], dt)
             else:
-                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2), dt)
+                if pygame.mouse.get_pressed()[0]:  # Allow mouse control
+                    paddle_player.follow_target(mouse_y, dt)
+                else:
+                    paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2), dt)
 
         # Update ball and AI paddle
-        ball.update(dt)
-        paddle_ai.follow_target(ball.y, dt)
+        if paused_pong == False:
+            ball.update(dt)
+            paddle_ai.follow_target(ball.y, dt)
 
-        # Detect collisions
-        ball.detect_collision_screen()
-        ball.detect_collision_paddle(paddle_player, paddle_ai)
+            # Detect collisions
+            reset_game, score = ball.detect_collision_screen(score)
+            ball.detect_collision_paddle(paddle_player, paddle_ai)
 
-        # Draw everything
-        screen.fill((20, 20, 25))  # Background color
+        if scene == "pong":
+            # Draw everything
+            screen.fill((20, 20, 25))  # Background color
 
-        # Draw the dotted line in the middle
-        line_color = (220, 220, 224)  # White color for the line
-        line_width = 5  # Width of each line segment
-        line_height = sh//27  # Height of each line segment
-        gap = sh//27  # Gap between line segments
-        for y in range(0, sh, line_height + gap):
-            pygame.draw.rect(screen, line_color, (sw // 2 - line_width // 2, y, line_width, line_height))
+            # Draw the dotted line in the middle
+            line_color = (220, 220, 224)  # White color for the line
+            line_width = 5  # Width of each line segment
+            line_height = sh//27  # Height of each line segment
+            gap = sh//27  # Gap between line segments
+            for y in range(0, sh, line_height + gap):
+                pygame.draw.rect(screen, line_color, (sw // 2 - line_width // 2, y, line_width, line_height))
 
-        # Draw paddles and ball
-        ball.draw(screen)
-        paddle_player.draw(screen, dt)
-        paddle_ai.draw(screen, dt)
+            # Draw paddles and ball
+            ball.draw(screen)
+            paddle_player.draw(screen, dt)
+            paddle_ai.draw(screen, dt)
 
         pygame.display.flip()  # Update the display
 
