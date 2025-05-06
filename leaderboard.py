@@ -98,3 +98,8 @@ def get_leaderboard(position):
         scores.sort(key= lambda x: float(x[1]), reverse=reverseornot)
 
         return scores
+    
+#function to input a new user
+def new_user(username):
+    with open("signin.txt", "a") as file:
+        pass
