@@ -86,10 +86,10 @@ while run:
     if keys[pygame.K_RIGHT] and x < 2560 - vel - width:  
         x += vel
     if x == place_x - 35 and y == place_y:
-        print("No")
+        print(place_y - random_hight)
         x -= vel
     if x == place_x + 290 and y == place_y:
-        print("No")
+        print(place_y)
         x += vel
   
 
@@ -112,10 +112,13 @@ while run:
         if jumpCount >= -10:
             y -= (jumpCount * abs(jumpCount)) * 0.5
             jumpCount -= 1
-        if y == place_y + random_hight and x >= place_x - 35 <= place_x + 290:
-            y -= (jumpCount * abs(place_y)) * 0.5
-            time.sleep(1)
-            y -= (jumpCount * abs(jumpCount)) * 0.5
+            if y == place_y - 50:
+                    y = place_y - 90
+                    y = 1270
+
+
+
+
 
             
         else:
@@ -123,7 +126,7 @@ while run:
             isJump = False
    
     win.fill((0,0,0))
-    pygame.draw.rect(win, (255,0,0), (x, y, width, height))
+    pygame.draw.rect(win, (0,255,0), (x, y, width, height))
     for i in range(1,times):
             pygame.draw.rect(win, (255,0,0), (place_x, place_y, 300, 150))
 
