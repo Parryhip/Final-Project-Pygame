@@ -39,20 +39,18 @@ smallfont = pygame.font.SysFont('Corbel',25)
 # this font
 reaction_time = 0
 wait_time1 = None
-text = smallfont.render('Click when it tells you to...' , True , color)
 wait_time1 = random.randint(1,9)
 time.sleep(wait_time1)
 text = smallfont.render('Click!' , True , color)
-
+click = False
+score = None
 
 
 
 while True:
 
-
-               
-
-
+    
+     
     reaction_time += 0.1
     time.sleep(0.1)
     for ev in pygame.event.get():
@@ -64,13 +62,18 @@ while True:
                 #if the mouse is clicked on the
                 # button the game is terminated
                 try:
-                    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40 and reaction_time <= 1000000:
+                    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40 and reaction_time <= 1000000 and click == False:
+                        text = smallfont.render(f'Your reaction time is {reaction_time*1000} MS\npress q to quit, and r to restart\n(after pressing r to play again, wait \nuntil the message turns to : Click!) \n' , True , color)
                         score = reaction_time
+                        click = True
+                        print(score)
+                        if score <= 
 
 
-                        text = smallfont.render(f'Your reaction time is {score*1000} MS\npress q to quit, and r to play again' , True , color)
+
+
                     else:
-                        text = smallfont.render(f'press q to quit, and r to play again, \ndont click before it tells you to!' , True , color)
+                        text = smallfont.render(f'press q to quit, and r to restart\n(after pressing r, wait until \nthe message turns to : Click!) to play again\n(do not click before the message\n or after you already clicked!), \nThis is your reaction time\n: {score*1000}ms' , True , color)
 
 
 
@@ -81,7 +84,8 @@ while True:
 
                 except NameError:
                      reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,so your reaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                     
                      
        
             if ev.type == pygame.KEYDOWN:
@@ -89,9 +93,15 @@ while True:
                          pygame.quit()
                          sys.exit()
                     elif ev.key == pygame.K_r:
-                         break
-
-
+                         reaction_time = 0
+                         score = 0
+                         wait_time1 = None
+                         wait_time1 = random.randint(1,9)
+                         time.sleep(wait_time1)
+                         text = smallfont.render('Click!' , True , color)
+                         click = False
+                         score = None
+                         
              
 
 
