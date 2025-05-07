@@ -27,6 +27,7 @@ class Circle:
         self.speed = 0.75
         self.base_speed = 0.75
         self.moving = False
+        self.collision_timer = 0  # Timer to prevent immediate re-collision
 
     def draw(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
@@ -54,35 +55,47 @@ class Circle:
         
         return False, score
 
-    def detect_collision_paddle(self, paddle_player, paddle_ai):
+    def detect_collision_paddle(self, paddle_player, paddle_ai): # Fix weird bug where ball repeatedly bounces off paddle and keeps same directions (Add better print statements) (Walk through each line of code with the values to see the error)
         # Check collision with both paddles
+
+        if round(self.collision_timer,0) > 0:
+            self.collision_timer -= 1
+            return
+
         for paddle in [paddle_player, paddle_ai]:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
-               (self.y + self.radius > paddle.y and self.y - self.radius < paddle.y + paddle.height):
+               (self.y + self.radius > paddle.y - abs(paddle.speed)*10 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed)*10):
+                self.collision_timer = 10
+                print(self.direction)
 
                 # Adjust ball speed based on paddle movement
                 paddle_speed_influence = paddle.speed * 14
                 self.speed += abs(paddle.speed) * 0.05
 
                 # Adjust ball direction based on collision position
-                if self.x > paddle.x - 0.4 * paddle.width and self.x < paddle.x + paddle.width * 1.4:
-                    if self.y < paddle.y + paddle.height / 9:  # Top edge of paddle
+                if self.x > paddle.x and self.x < paddle.x + paddle.width:
+                    if self.y < paddle.y + paddle.height * (1 / 9):
                         self.direction = -abs(self.direction)
                     elif self.y > paddle.y + paddle.height * (8 / 9):  # Bottom edge of paddle
                         self.direction = abs(self.direction)
+                    else:
+                        self.direction = 180 - (self.direction % 360)  # Reverse horizontal direction
+                        self.direction += paddle_speed_influence
                 else:
                     self.direction = 180 - (self.direction % 360)  # Reverse horizontal direction
                     self.direction += paddle_speed_influence
 
                     # Prevent ball from getting stuck in near-vertical angles
-                    if 82 < abs(self.direction % 360) < 98 or 262 < abs(self.direction % 360) < 278:
-                        self.direction += 12 if paddle_speed_influence > 0 else -12
+                    if 75 < abs(self.direction % 360) < 105 or 255 < abs(self.direction % 360) < 285:
+                        self.direction += 15 if paddle_speed_influence > 0 else -15
+                        self.direction += random.uniform(-5, 5)
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
-                    self.x = paddle.x + paddle.width + self.radius
+                    self.x = paddle.x + paddle.width + self.radius + 1
                 else:
-                    self.x = paddle.x - self.radius
+                    self.x = paddle.x - self.radius - 1
+                print(self.direction)
 
     def reset_ball(self, screen):
         self.x = screen.get_width() // 2
