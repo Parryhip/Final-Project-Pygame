@@ -359,6 +359,4 @@ def tic_tac_toe(username):
         
         pygame.display.flip()
         dt = clock.tick(60) / 1000
-    pygame.quit()
-
-tic_tac_toe("tom")
+    return
