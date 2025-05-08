@@ -1,5 +1,4 @@
 username,hashedpassword,salt
-samuel,$2b$12$jToWCQ85MDObZRifRv4HZu59bf67TsKG/pEmoDcst6Ek8giwnnCii,$2b$12$jToWCQ85MDObZRifRv4HZu
-f,$2b$12$XktJ/rx7UI0PBvXqfzt76.KbzJrpLLlYSJRgOzQNeD7wKgVCujfoS,$2b$12$XktJ/rx7UI0PBvXqfzt76.
-h,$2b$12$/J.ficASUktPEIQn8iCQquuVgf2heAnx402yGYyql2f1YRj7HtDIm,$2b$12$/J.ficASUktPEIQn8iCQqu
-l,$2b$12$abGCsO67iKJlVyvIYfRE4O6MLKMFsbd83EOOYy2BWOQ2TuHHjpxAm,$2b$12$abGCsO67iKJlVyvIYfRE4O
+samuel,$2b$12$pQOaubKAF9lBn4IJuOhatuJPhgeKMlHRjaFQD1v3gchEkE07k8k0K
+hewo,$2b$12$mMypfdq65H5HOiFV/ZxVS.nD8U8PTqUt1Kmq9DnISmLOZxfaxbKPa
+asdf,$2b$12$VFaIw1MzsYCURXNq7Fl5W./X0C9u0s1AWrYE34r8uHU97A3nj114a
