@@ -185,7 +185,7 @@ def main_loop():
     screen = pygame.display.set_mode((sw, sh))
     clock = pygame.time.Clock()
 
-    paddle_width = 20
+    paddle_width = sw // 50
     paddle_height = sh / 5
     generic_color = (255, 255, 255)  # White color for paddles and ball
     paddle_border = 7
@@ -203,14 +203,24 @@ def main_loop():
     score_player_text = Text("0", sh // 5, (255, 255, 255), sw // 2.5, sh // 7, center=True)
     score_AI_text = Text("0", sh // 5, (255, 255, 255), sw - (sw // 2.5), sh // 7, center=True)
 
+    win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw // 2, int(sh // 1.2), center=True)
+
     running = True
     reset_game = False
+
     cooldown = True
     cooldown_start_time = pygame.time.get_ticks()
+    cooldown_timer = 3
+
     paused_pong = False
     scene = "pong"
+
     score_player = 0
     score_ai = 0
+    score = 0
+
+    end_game = False
+    
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
@@ -220,12 +230,13 @@ def main_loop():
             ball.reset_ball(screen)
             cooldown_start_time = pygame.time.get_ticks()
             cooldown = True
+            player_movement_key[0] = False
             reset_game = False
 
         if cooldown:
             # Calculate the remaining cooldown time
             elapsed_time = (pygame.time.get_ticks() - cooldown_start_time) // 1000
-            remaining_time = 3 - elapsed_time
+            remaining_time = cooldown_timer - elapsed_time
             paused_pong = True
             countdown_text.update(str(int(remaining_time + 0.99)))
             paddle_ai.follow_target(sh // 2, dt)
@@ -235,6 +246,8 @@ def main_loop():
             if remaining_time <= 0:
                 cooldown = False
                 paused_pong = False
+                if end_game == True:
+                    running = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -295,6 +308,22 @@ def main_loop():
             score_AI_text.update(str(score_ai))
             score_AI_text.draw(screen)
 
+            if not paused_pong:
+                if score_ai >= 3:
+                    end_game = True
+                    reset_game = True
+                    cooldown_timer = 5
+                    score = 0
+                    win_lose.update("Loser")
+
+                
+                elif score_player >= 3:
+                    end_game = True
+                    reset_game = True
+                    cooldown_timer = 5
+                    score = 1
+                    win_lose.update("Winner")
+
             # Draw paddles and ball
             ball.draw(screen)
             paddle_player.draw(screen, dt)
@@ -303,10 +332,15 @@ def main_loop():
             # Draw the Countdown
             if cooldown:
                 countdown_text.draw(screen)
+            if end_game:
+                win_lose.draw(screen)
 
         pygame.display.flip()  # Update the display
-
+    
     pygame.quit()
+    return score
 
 
-main_loop()
+score = main_loop()
+
+print(score)
