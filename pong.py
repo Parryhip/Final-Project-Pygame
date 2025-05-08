@@ -197,9 +197,9 @@ def main_loop():
     paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
 
     # Initialize text
-    countdown_text = Text("3", 100, (255, 255, 255), sw // 2, sh // 1.5, center=True)
-    score_player_text = Text("0", 150, (255, 255, 255), sw // 2.5, sh // 7, center=True)
-    score_AI_text = Text("0", 150, (255, 255, 255), sw - (sw // 2.5), sh // 7, center=True)
+    countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw // 2, sh // 1.5, center=True)
+    score_player_text = Text("0", sh // 5, (255, 255, 255), sw // 2.5, sh // 7, center=True)
+    score_AI_text = Text("0", sh // 5, (255, 255, 255), sw - (sw // 2.5), sh // 7, center=True)
 
     running = True
     reset_game = False
