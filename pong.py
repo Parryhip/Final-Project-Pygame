@@ -7,11 +7,10 @@ import math
 # TO DO:
 # - Add instructions in beginning
 # - Add difficulty (maybe in beginning. At least add difficulty for AI)
-# - Figure out how to connect separate files of pygame seamlessly (exp: transitioning from game select to game with no xing out)
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
 # - Fix vertical direction of ball reverter, to make game not have ball bouncing up and down constantly
-# - Change window size to fit screen size better, keep aspect ratio
+# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files)
 # - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit))
 # - Maybe add an exit key?
 
