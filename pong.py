@@ -11,6 +11,9 @@ import math
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
 # - Fix vertical direction of ball reverter, to make game not have ball bouncing up and down constantly
+# - Change window size to fit screen size better, keep aspect ratio
+# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit))
+# - Maybe add an exit key?
 
 # Initialize Pygame
 pygame.init()
