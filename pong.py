@@ -196,7 +196,7 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
-def leaderboard():
+def leaderboard(): # SAMUALS CODE NEED TO GET BETTER ADAPTED TO MINE
     #going to leaderboard loop
     while run:
         #clear screen
