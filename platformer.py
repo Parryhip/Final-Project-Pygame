@@ -113,9 +113,6 @@ while run:
         if jumpCount >= -10:
             y -= (jumpCount * abs(jumpCount)) * 0.5
             jumpCount -= 1
-            if y == place_y - 50:
-                    y = place_y - 90
-                    y = 1270
 
 
 
