@@ -117,8 +117,11 @@ class Circle:
 
                     # Prevent ball from getting stuck in near-vertical angles
                 normalized_direction = self.direction % 360
+                
                 if normalized_direction > 180:
                     normalized_direction -= 360  # Normalize to range -180 to 180
+                print(f"START  norm direction {normalized_direction}")
+                print(f"START direction {self.direction}")
                 if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
                     if normalized_direction > 0:
                         self.direction -= 15
@@ -129,6 +132,7 @@ class Circle:
                         self.direction -= 15
                     else:
                         self.direction += 15
+                print(f"END direction {self.direction}\n")
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
@@ -194,7 +198,7 @@ class Paddle:
                 self.speed = 0
 
 
-def main_loop():
+def pong_loop():
     sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
     sw_m = pygame.display.Info().current_w  # Screen dimensions
     screen = pygame.display.set_mode((sw_m, sh))
@@ -367,6 +371,6 @@ def main_loop():
     return score
 
 
-score = main_loop()
+score = pong_loop()
 
 print(score)
