@@ -61,7 +61,7 @@ class Circle:
         pygame.draw.circle(surface, (10,10,13), (self.x, self.y), self.radius + 3)
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
-    def detect_collision_screen(self, score_player, score_ai):
+    def detect_collision_screen(self, score_player, score_ai, sw_m_half):
         # Handle collision with the top and bottom of the screen
         if self.y < self.radius:  # Top of the screen
             self.y = self.radius
@@ -74,10 +74,10 @@ class Circle:
             self.speed += (self.base_speed - self.speed) * 0.05
 
         # Handle collision with the left and right of the screen (scoring logic)
-        if self.x < self.radius:  # Left of the screen
+        if self.x < self.radius + sw_m_half:  # Left of the screen
             return True, score_player, score_ai + 1
 
-        elif self.x > pygame.display.get_surface().get_width() - self.radius:  # Right of the screen
+        elif self.x > pygame.display.get_surface().get_width() - self.radius - sw_m_half:  # Right of the screen
             return True, score_player + 1, score_ai
 
         return False, score_player, score_ai
@@ -196,6 +196,8 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
+def leaderboard():
+    pass
 
 def pong_loop():
     sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
@@ -325,7 +327,7 @@ def pong_loop():
                 paddle_ai.follow_target(ball.y, dt)
 
             # Detect collisions
-            reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai)
+            reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai, sw_m_half)
             ball.detect_collision_paddle(paddle_player, paddle_ai)
 
         if scene == "pong":
