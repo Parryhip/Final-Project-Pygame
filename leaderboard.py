@@ -97,4 +97,10 @@ def get_leaderboard(position):
 
         scores.sort(key= lambda x: float(x[1]), reverse=reverseornot)
 
-        return scores
+        return scores[:10]
+    
+#function to input a new user
+def new_user(username):
+    with open("high_scores.csv", "a") as file:
+        file.write("\n")
+        file.write(f"{username},0,0,0,0,0")

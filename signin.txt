@@ -1,0 +1,4 @@
+username,hashedpassword,salt
+samuel,$2b$12$pQOaubKAF9lBn4IJuOhatuJPhgeKMlHRjaFQD1v3gchEkE07k8k0K
+hewo,$2b$12$mMypfdq65H5HOiFV/ZxVS.nD8U8PTqUt1Kmq9DnISmLOZxfaxbKPa
+asdf,$2b$12$VFaIw1MzsYCURXNq7Fl5W./X0C9u0s1AWrYE34r8uHU97A3nj114a
