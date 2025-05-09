@@ -28,22 +28,63 @@ no_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 1
 yes_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 240, 100, 100, "Yes", "Blue", "White")
 next_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Next", "Blue", "White")
 
-def tic_leaderboard(someone_has_won, win_text):
-    while running:
-        if someone_has_won == "Player":
-            screen.fill("black")
-            next_button.draw(screen)
-            screen.blit(win_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
-            screen.blit(tic_title_surface, (1000, 470))
-            for surface in score_surfaces:
+def tic_leaderboard(someone_has_won, username):
+    font = pygame.font.SysFont(None, 24)
+    if someone_has_won == "Player":
+            #going to leaderboard loop
+        while run:
+            #clear screen
+            screen.fill((255,255,255))
+
+            #score surfaces
+            scoresurfaces = []
+
+            #show leaderboard!
+            cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+            
+            #surfaces
+            title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+
+            num = 1
+
+            for score in tic_tac_leaderboard:
+                scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+                num += 1
+
+
+            for event in pygame.event.get():
+                #checing if the user clicked the X button
+                if event.type == pygame.QUIT:
+                    run = False
+                #checking events of buttons
+                for button in cpm_buttons:
+                    returnvalue = button.is_clicked()
+                    if returnvalue:
+                        if button == go_back_to_main_screen:
+                            return
+                        if button == play_again:
+                            cpm(username)
+                            return
+
+            #variable for showing first score
+            position = (1000, 500)
+
+            #surface showing
+            screen.blit(title_surface, (1000, 470))
+            for surface in scoresurfaces:
                 screen.blit(surface, position)
                 position = (1000, position[1] + 30)
-            if next_button.is_clicked():
-                running = False
+
+            for button in cpm_buttons:
+                button.draw(screen)
+
+            #updating displays
             pygame.display.flip()
+
+            #setting frame_rate
             clock.tick(60)
-        else:
-            break
+    else:
+        return
 
 def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, tic_1_pl, tic_2_pl, tic_3_pl, tic_4_pl, tic_5_pl, tic_6_pl, tic_7_pl, tic_8_pl, tic_9_pl):
     if tic_1 == False and tic_1_pl == True and tic_2 == False and tic_2_pl == True and tic_3 == False and tic_3_pl == True:
@@ -78,14 +119,13 @@ def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, t
         return "Computer"
     elif tic_3 == False and tic_3_pl == False and tic_5 == False and tic_5_pl == False and tic_7 == False and tic_7_pl == False:
         return "Computer"
+    elif tic_1 == False and tic_2 == False and tic_3 == False and tic_4 == False and tic_5 == False and tic_6 == False and tic_7 == False and tic_9 == False:
+        return "Computer"
 
 def tic_tac_toe(username):
-    position = (1000, 500)
     font = pygame.font.SysFont(None, 24)
-    num = 1
     again_text = font.render('Play Again?', True, "white")
     running = True
-    dt = 0
     tic_1_active = True
     tic_2_active = True
     tic_3_active = True
@@ -373,14 +413,8 @@ def tic_tac_toe(username):
         new_score = current_score + 1
         input_score(username, 2, new_score)
 
-    tic_tac_leaderboard_title = "----------TOP 10 Tic Tac Toe SCORES----------"
-    tic_title_surface = font.render(tic_tac_leaderboard_title, True, (0,0,0))
-    score_surfaces = []
-    scores = get_leaderboard(2)
-    for score in scores:
-        score_surfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
-        num += 1
+    tic_leaderboard(someone_has_won, username)
 
     return
 
-tic_tac_toe("tom")
+tic_tac_toe("asdf")
