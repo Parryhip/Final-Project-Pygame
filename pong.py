@@ -197,7 +197,6 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
-
 def pong_loop():
     sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
     sw_m = pygame.display.Info().current_w  # Screen dimensions
