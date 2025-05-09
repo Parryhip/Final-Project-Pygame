@@ -9,8 +9,7 @@ import math
 # - Add difficulty (maybe in beginning. At least add difficulty for AI)
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
-# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files) - IMPORTANT
-# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit)) - IMPORTANT
+# - Fix Veriticall line Bug!!! ITS STILL THERE AHFDHGFDGFDGS - IMPORTANT
 # - Maybe add an exit key?
 # - Add a leaderboard at end of game - IMPORTANT
 
@@ -227,14 +226,16 @@ def pong_loop():
 
     win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw_m_half + sw // 2, int(sh // 1.2), center=True)
 
+    start_text = Text("Press Anything to Start Game", int(sh // 30), (255, 255, 255), sw_m_half + sw // 2, int(sh // 2), center=True)
+
     running = True
     reset_game = False
 
-    cooldown = True
-    cooldown_start_time = pygame.time.get_ticks()
+    cooldown = False
+    cooldown_start_time = 0
     cooldown_timer = 3
 
-    paused_pong = False
+    paused_pong = True
     scene = "pong"
 
     score_player = 0
@@ -242,11 +243,17 @@ def pong_loop():
     score = 0
 
     end_game = False
+
+    start_game = True
+    surface_transparent = pygame.Surface((sw_m,sh), pygame.SRCALPHA)
     
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        if start_game:
+            paused_pong = True
 
         if reset_game:
             ball.reset_ball(screen)
@@ -275,6 +282,11 @@ def pong_loop():
             if event.type == pygame.QUIT:
                 running = False
                 break
+            if start_game:
+                if event.type in [pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN]:
+                    start_game = False
+                    cooldown = True
+                    cooldown_start_time = pygame.time.get_ticks()
             if not paused_pong:
                 if event.type == pygame.KEYDOWN:
                     # Handle player movement keys
@@ -307,7 +319,7 @@ def pong_loop():
             ball.update(dt)
 
             # Checks if ball is really close to player and if so moves to center
-            if ball.x < sw // 4:
+            if ball.x < sw_m_half + sw // 4:
                 paddle_ai.follow_target(sh // 2, dt)
             else:
                 paddle_ai.follow_target(ball.y, dt)
@@ -360,6 +372,10 @@ def pong_loop():
                 countdown_text.draw(screen)
             if end_game:
                 win_lose.draw(screen)
+            if start_game:
+                pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
+                screen.blit(surface_transparent, (0,0))
+                start_text.draw(screen)
         
         # Draw black rectangles on the left and right sides of the screen
         pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
