@@ -9,10 +9,10 @@ import math
 # - Add difficulty (maybe in beginning. At least add difficulty for AI)
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
-# - Fix vertical direction of ball reverter, to make game not have ball bouncing up and down constantly
-# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files)
-# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit))
+# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files) - IMPORTANT
+# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit)) - IMPORTANT
 # - Maybe add an exit key?
+# - Add a leaderboard at end of game - IMPORTANT
 
 # Initialize Pygame
 pygame.init()
@@ -47,18 +47,19 @@ class Text:
 
 
 class Circle:
-    def __init__(self, x, y, radius, color):
+    def __init__(self, x, y, radius, color, sh):
         self.x = x
         self.y = y
         self.radius = radius
         self.color = color
         self.direction = random.choice([random.randint(-45, 45), random.randint(135, 235)])
-        self.speed = 0.75
-        self.base_speed = 0.75
+        self.base_speed = sh / 1000  # Base speed of the ball
+        self.speed = self.base_speed
         self.moving = False
         self.collision_timer = 0  # Timer to prevent immediate re-collision
 
     def draw(self, surface):
+        pygame.draw.circle(surface, (10,10,13), (self.x, self.y), self.radius + 3)
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
     def detect_collision_screen(self, score_player, score_ai):
@@ -90,10 +91,10 @@ class Circle:
 
         for paddle in [paddle_player, paddle_ai]:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
-               (self.y + self.radius > paddle.y - abs(paddle.speed) * 10 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 10):
+               (self.y + self.radius > paddle.y - abs(paddle.speed) * 15 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 15):
                 self.collision_timer = 10
-                print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
+                #print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
+                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
 
                 # Adjust ball speed based on paddle movement
                 paddle_speed_influence = paddle.speed * 14
@@ -112,9 +113,22 @@ class Circle:
                     self.direction = 180 - (self.direction % 360)
                     self.direction += paddle_speed_influence
 
+                self.direction = round(self.direction,1)  # Round direction to 1 decimal place
+
                     # Prevent ball from getting stuck in near-vertical angles
-                    if 75 < abs(self.direction % 360) < 105 or 255 < abs(self.direction % 360) < 285:
-                        self.direction += 15 if paddle_speed_influence > 0 else -15
+                normalized_direction = self.direction % 360
+                if normalized_direction > 180:
+                    normalized_direction -= 360  # Normalize to range -180 to 180
+                if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
+                    if normalized_direction > 0:
+                        self.direction -= 15
+                    else:
+                        self.direction += 15
+                elif 255 < abs(normalized_direction) < 285:  # Near 270 degrees
+                    if normalized_direction > 0:
+                        self.direction -= 15
+                    else:
+                        self.direction += 15
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
@@ -122,8 +136,8 @@ class Circle:
                 else:
                     self.x = paddle.x - self.radius - 1
 
-                print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
+                #print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
+                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
 
     def reset_ball(self, screen):
         self.x = screen.get_width() // 2
@@ -181,11 +195,15 @@ class Paddle:
 
 
 def main_loop():
-    sw, sh = 1000, 750  # Screen dimensions
-    screen = pygame.display.set_mode((sw, sh))
+    sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
+    sw_m = pygame.display.Info().current_w  # Screen dimensions
+    screen = pygame.display.set_mode((sw_m, sh))
     clock = pygame.time.Clock()
 
-    paddle_width = 20
+    sw = int(sh*(4/3)) # Aspect sw
+    sw_m_half = (sw_m -sw) // 2
+
+    paddle_width = sw // 50
     paddle_height = sh / 5
     generic_color = (255, 255, 255)  # White color for paddles and ball
     paddle_border = 7
@@ -194,23 +212,33 @@ def main_loop():
     pygame.display.set_caption("Pong Game")
 
     # Initialize ball and paddles
-    ball = Circle(sw // 2, sh // 2, sh / 45, generic_color)
-    paddle_player = Paddle(screen, 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
+    ball = Circle(sw_m_half + sw // 2, sh // 2, sh / 45, generic_color, sh)
+    paddle_player = Paddle(screen, sw_m_half + 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
+    paddle_ai = Paddle(screen, sw_m_half + sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.006, paddle_border)
 
     # Initialize text
-    countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw // 2, sh // 1.5, center=True)
-    score_player_text = Text("0", sh // 5, (255, 255, 255), sw // 2.5, sh // 7, center=True)
-    score_AI_text = Text("0", sh // 5, (255, 255, 255), sw - (sw // 2.5), sh // 7, center=True)
+    countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw_m_half + sw // 2, sh // 1.5, center=True)
+    score_player_text = Text("0", sh // 5, (255, 255, 255), sw_m_half + sw // 2.5, sh // 7, center=True)
+    score_AI_text = Text("0", sh // 5, (255, 255, 255), sw_m_half + sw - (sw // 2.5), sh // 7, center=True)
+
+    win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw_m_half + sw // 2, int(sh // 1.2), center=True)
 
     running = True
     reset_game = False
+
     cooldown = True
     cooldown_start_time = pygame.time.get_ticks()
+    cooldown_timer = 3
+
     paused_pong = False
     scene = "pong"
+
     score_player = 0
     score_ai = 0
+    score = 0
+
+    end_game = False
+    
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
@@ -220,12 +248,13 @@ def main_loop():
             ball.reset_ball(screen)
             cooldown_start_time = pygame.time.get_ticks()
             cooldown = True
+            player_movement_key[0] = False
             reset_game = False
 
         if cooldown:
             # Calculate the remaining cooldown time
             elapsed_time = (pygame.time.get_ticks() - cooldown_start_time) // 1000
-            remaining_time = 3 - elapsed_time
+            remaining_time = cooldown_timer - elapsed_time
             paused_pong = True
             countdown_text.update(str(int(remaining_time + 0.99)))
             paddle_ai.follow_target(sh // 2, dt)
@@ -235,6 +264,8 @@ def main_loop():
             if remaining_time <= 0:
                 cooldown = False
                 paused_pong = False
+                if end_game == True:
+                    running = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -261,17 +292,21 @@ def main_loop():
         # Update player paddle position
         if not paused_pong:
             if player_movement_key[0]:
-                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * player_movement_key[1], dt)
+                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * 0.8 * player_movement_key[1], dt)
             else:
                 if pygame.mouse.get_pressed()[0]:  # Allow mouse control
                     paddle_player.follow_target(mouse_y, dt)
                 else:
                     paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2), dt)
 
-        # Update ball and AI paddle
-        if not paused_pong:
+            # Update ball and AI paddle
             ball.update(dt)
-            paddle_ai.follow_target(ball.y, dt)
+
+            # Checks if ball is really close to player and if so moves to center
+            if ball.x < sw // 4:
+                paddle_ai.follow_target(sh // 2, dt)
+            else:
+                paddle_ai.follow_target(ball.y, dt)
 
             # Detect collisions
             reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai)
@@ -283,17 +318,33 @@ def main_loop():
 
             # Draw the dotted line in the middle
             line_color = (220, 220, 224)  # White color for the line
-            line_width = 5  # Width of each line segment
+            line_width = sh // 150  # Width of each line segment
             line_height = sh // 30  # Height of each line segment
             gap = sh // 31  # Gap between line segments
             for y in range(0, sh, line_height + gap):
-                pygame.draw.rect(screen, line_color, ((sw // 2) - (line_width // 2), y, line_width, line_height))
+                pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
 
             # Draw the Scoreboard
             score_player_text.update(str(score_player))
             score_player_text.draw(screen)
             score_AI_text.update(str(score_ai))
             score_AI_text.draw(screen)
+
+            if not paused_pong:
+                if score_ai >= 7:
+                    end_game = True
+                    reset_game = True
+                    cooldown_timer = 5
+                    score = 0
+                    win_lose.update("Loser")
+
+                
+                elif score_player >= 7:
+                    end_game = True
+                    reset_game = True
+                    cooldown_timer = 5
+                    score = 1
+                    win_lose.update("Winner")
 
             # Draw paddles and ball
             ball.draw(screen)
@@ -303,10 +354,19 @@ def main_loop():
             # Draw the Countdown
             if cooldown:
                 countdown_text.draw(screen)
+            if end_game:
+                win_lose.draw(screen)
+        
+        # Draw black rectangles on the left and right sides of the screen
+        pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
+        pygame.draw.rect(screen, (12, 12, 15), (sw_m_half + sw, 0, sw_m_half, sh))  # Right side
 
         pygame.display.flip()  # Update the display
-
+    
     pygame.quit()
+    return score
 
 
-main_loop()
+score = main_loop()
+
+print(score)
