@@ -197,7 +197,59 @@ class Paddle:
                 self.speed = 0
 
 def leaderboard():
-    pass
+    #going to leaderboard loop
+    while run:
+        #clear screen
+        screen.fill((255,255,255))
+
+        #score surfaces
+        scoresurfaces = []
+
+        #show leaderboard!
+        cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+        
+        #surfaces
+        title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+
+        num = 1
+
+        for score in cpmleaderboard:
+            scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+            num += 1
+
+
+        for event in pygame.event.get():
+            #checing if the user clicked the X button
+            if event.type == pygame.QUIT:
+                run = False
+            #checking events of buttons
+            for button in cpm_buttons:
+                returnvalue = button.is_clicked()
+                if returnvalue:
+                    if button == go_back_to_main_screen:
+                        return
+                    if button == play_again:
+                        cpm(username)
+                        return
+
+        #variable for showing first score
+        position = (1000, 500)
+
+        #surface showing
+        screen.blit(title_surface, (1000, 470))
+        for surface in scoresurfaces:
+            screen.blit(surface, position)
+            position = (1000, position[1] + 30)
+
+        for button in cpm_buttons:
+            button.draw(screen)
+
+        #updating displays
+        pygame.display.flip()
+
+        #setting frame_rate
+        clock.tick(60)
+
 
 def pong_loop():
     sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
