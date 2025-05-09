@@ -61,13 +61,14 @@ while True:
                
                 #if the mouse is clicked on the
                 # button the game is terminated
+              try:    
                 try:
                     if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40 and reaction_time <= 1000000 and click == False:
                         text = smallfont.render(f'Your reaction time is {reaction_time*1000} MS\npress q to quit, and r to restart\n(after pressing r to play again, wait \nuntil the message turns to : Click!) \n' , True , color)
                         score = reaction_time
                         click = True
                         print(score)
-                        if score <= 
+                        
 
 
 
@@ -84,7 +85,12 @@ while True:
 
                 except NameError:
                      reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                     
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
+              except TypeError:
+                     reaction_time = 1000000
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000,2)} MS\n press q to quit, and r to play again' , True , color)
+                   
                      
                      
        
@@ -93,15 +99,47 @@ while True:
                          pygame.quit()
                          sys.exit()
                     elif ev.key == pygame.K_r:
-                         reaction_time = 0
-                         score = 0
-                         wait_time1 = None
-                         wait_time1 = random.randint(1,9)
-                         time.sleep(wait_time1)
-                         text = smallfont.render('Click!' , True , color)
-                         click = False
-                         score = None
-                         
+                        try:    
+                            # initializing the constructor
+                            pygame.init()
+
+                            # screen resolution
+                            res = (1580,1320)
+
+                            # opens up a window
+                            screen = pygame.display.set_mode(res)
+
+                            # white color
+                            color = (255,255,255)
+
+                            # light shade of the button
+                            color_light = (170,170,170)
+
+                            # dark shade of the button
+                            color_dark = (100,100,100)
+
+                            # stores the width of the
+                            # screen into a variable
+                            width = screen.get_width()
+
+                            # stores the height of the
+                            # screen into a variable
+                            height = screen.get_height()
+
+                            # defining a font
+                            smallfont = pygame.font.SysFont('Corbel',25)
+                            reaction_time = 0
+                            score = 0
+                            wait_time1 = None
+                            wait_time1 = random.randint(1,9)
+                            time.sleep(wait_time1)
+                            text = smallfont.render('Click!' , True , color)
+                            click = False
+                            score = None
+                        except TypeError:
+                              reaction_time = 1000000
+                              text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                             
              
 
 

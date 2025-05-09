@@ -30,6 +30,7 @@ smallfont = pygame.font.SysFont('Corbel',25)
 reaction_time = 0
 wait_time1 = None
 times = random.randint(3,9)
+create = True
 
 
 
@@ -39,12 +40,12 @@ times = random.randint(3,9)
  
 
 
-win = pygame.display.set_mode((2560,1385))
+win = pygame.display.set_mode((2560,1320))
 pygame.display.set_caption("First Game")
 
 
 x = 10
-y = 1320
+y = 1280
 width = 40
 height = 40
 vel = 5
@@ -57,14 +58,13 @@ jumpCount = 10
 run = True
 
 
-#place_x = random.randint(60, 1900)
-#place_y = random.randint(1330, 1350)
+place_x = random.randint(60, 1900)
+place_y = random.randint(1250, 1280)
 #random_width = random.randint(40,120)
 #random_hight = random.randint(40,100)
-place_x = 60
-place_y  = 1320
+
 random_width = random.randint(40,120)
-random_hight = random.randint(40,100)
+random_hight = 35
 
 
 
@@ -88,10 +88,11 @@ while run:
     if x == place_x - 35 and y == place_y:
         print(place_y - random_hight)
         x -= vel
-    if x == place_x + 290 and y == place_y:
+    if x == place_x + 290 and y == place_y + 10:
         print(place_y)
         x += vel
-  
+    
+    
 
     
 
@@ -127,8 +128,10 @@ while run:
    
     win.fill((0,0,0))
     pygame.draw.rect(win, (0,255,0), (x, y, width, height))
-    for i in range(1,times):
-            pygame.draw.rect(win, (255,0,0), (place_x, place_y, 300, 150))
+    pygame.draw.rect(win, (255,0,0), (place_x, place_y, 300, 40))
+    pygame.draw.rect(win, (255,0,0), (place_x/1.5, 12, 300, 40))
+
+
 
 
  
@@ -136,5 +139,5 @@ while run:
 
 
     pygame.display.update()
-   
+
 pygame.quit()

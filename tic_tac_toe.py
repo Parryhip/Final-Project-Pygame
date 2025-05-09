@@ -24,8 +24,26 @@ tic_button_8 = Button((screen.get_width() / 2) - 100, (screen.get_height() / 2) 
 tic_button_9 = Button((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 240, 100, 100, "", "Black", "White")
 tic_tac_X = pygame.image.load("tic_tac_toe_X.png")
 tic_tac_O = pygame.image.load("tic_tac_toe_O.png")
-no_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 120, 100, 100, "No", "White", "Blue")
-yes_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 240, 100, 100, "Yes", "White", "Blue")
+no_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 120, 100, 100, "No", "Blue", "White")
+yes_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 240, 100, 100, "Yes", "Blue", "White")
+next_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Next", "Blue", "White")
+
+def tic_leaderboard(someone_has_won, win_text):
+    while running:
+        if someone_has_won == "Player":
+            screen.fill("black")
+            next_button.draw(screen)
+            screen.blit(win_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+            screen.blit(tic_title_surface, (1000, 470))
+            for surface in score_surfaces:
+                screen.blit(surface, position)
+                position = (1000, position[1] + 30)
+            if next_button.is_clicked():
+                running = False
+            pygame.display.flip()
+            clock.tick(60)
+        else:
+            break
 
 def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, tic_1_pl, tic_2_pl, tic_3_pl, tic_4_pl, tic_5_pl, tic_6_pl, tic_7_pl, tic_8_pl, tic_9_pl):
     if tic_1 == False and tic_1_pl == True and tic_2 == False and tic_2_pl == True and tic_3 == False and tic_3_pl == True:
@@ -62,9 +80,9 @@ def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, t
         return "Computer"
 
 def tic_tac_toe(username):
-    look_time = 3
+    position = (1000, 500)
     font = pygame.font.SysFont(None, 24)
-    win_text = font.render('You Won!', True, "white")
+    num = 1
     again_text = font.render('Play Again?', True, "white")
     running = True
     dt = 0
@@ -88,21 +106,11 @@ def tic_tac_toe(username):
     tic_9_pl_pressed = False
     player_turn = True
     someone_has_won = "None"
+    
     while running:
         someone_has_won = win_checker(tic_1_active, tic_2_active, tic_3_active, tic_4_active, tic_5_active, tic_6_active, tic_7_active, tic_8_active, tic_9_active, tic_1_pl_pressed, tic_2_pl_pressed, tic_3_pl_pressed, tic_4_pl_pressed, tic_5_pl_pressed, tic_6_pl_pressed, tic_7_pl_pressed, tic_8_pl_pressed, tic_9_pl_pressed)
         if someone_has_won == "Player":
-            screen.fill("black")
-            player_turn = False
-            computer_has_done_turn = True
-            screen.blit(win_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
-            look_time = look_time - 0.01
-            print(look_time)
-            if look_time <= 0:
-                current_score = int(get_score(username, 2))
-                print(current_score)
-                new_score = current_score + 1
-                input_score(username, 2, new_score)
-                running = False
+            break
         elif someone_has_won == "Computer":
             screen.fill("black")
             screen.blit(again_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
@@ -358,5 +366,21 @@ def tic_tac_toe(username):
                     player_turn = True
         
         pygame.display.flip()
-        dt = clock.tick(60) / 1000
+        clock.tick(60)
+    
+    if someone_has_won == "Player":
+        current_score = int(get_score(username, 2))
+        new_score = current_score + 1
+        input_score(username, 2, new_score)
+
+    tic_tac_leaderboard_title = "----------TOP 10 Tic Tac Toe SCORES----------"
+    tic_title_surface = font.render(tic_tac_leaderboard_title, True, (0,0,0))
+    score_surfaces = []
+    scores = get_leaderboard(2)
+    for score in scores:
+        score_surfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+        num += 1
+
     return
+
+tic_tac_toe("tom")
