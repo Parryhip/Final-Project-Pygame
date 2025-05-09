@@ -174,9 +174,8 @@ class Paddle:
         self.y = (self.scrn_hei // 2) - (self.height // 2)  # Reset paddle to the center of the screen
 
     def follow_target(self, target_pos, dt):
-        base_speed = self.scrn_hei / 750  # Base speed of the paddle
         # Smoothly move paddle towards the target position
-        self.speed = ((target_pos - (self.height // 2)) - self.y) * self.smoothness * base_speed
+        self.speed = ((target_pos - (self.height // 2)) - self.y) * self.smoothness
         self.y += self.speed * dt
 
         # Prevent paddle from going out of bounds (top and bottom)
@@ -196,9 +195,13 @@ class Paddle:
 
 
 def main_loop():
-    sw, sh = 1000, 750  # Screen dimensions
-    screen = pygame.display.set_mode((sw, sh))
+    sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
+    sw_m = pygame.display.Info().current_w  # Screen dimensions
+    screen = pygame.display.set_mode((sw_m, sh))
     clock = pygame.time.Clock()
+
+    sw = int(sh*(4/3)) # Aspect sw
+    sw_m_half = (sw_m -sw) // 2
 
     paddle_width = sw // 50
     paddle_height = sh / 5
@@ -209,16 +212,16 @@ def main_loop():
     pygame.display.set_caption("Pong Game")
 
     # Initialize ball and paddles
-    ball = Circle(sw // 2, sh // 2, sh / 45, generic_color, sh)
-    paddle_player = Paddle(screen, 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
+    ball = Circle(sw_m_half + sw // 2, sh // 2, sh / 45, generic_color, sh)
+    paddle_player = Paddle(screen, sw_m_half + 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
+    paddle_ai = Paddle(screen, sw_m_half + sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.006, paddle_border)
 
     # Initialize text
-    countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw // 2, sh // 1.5, center=True)
-    score_player_text = Text("0", sh // 5, (255, 255, 255), sw // 2.5, sh // 7, center=True)
-    score_AI_text = Text("0", sh // 5, (255, 255, 255), sw - (sw // 2.5), sh // 7, center=True)
+    countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw_m_half + sw // 2, sh // 1.5, center=True)
+    score_player_text = Text("0", sh // 5, (255, 255, 255), sw_m_half + sw // 2.5, sh // 7, center=True)
+    score_AI_text = Text("0", sh // 5, (255, 255, 255), sw_m_half + sw - (sw // 2.5), sh // 7, center=True)
 
-    win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw // 2, int(sh // 1.2), center=True)
+    win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw_m_half + sw // 2, int(sh // 1.2), center=True)
 
     running = True
     reset_game = False
@@ -289,17 +292,21 @@ def main_loop():
         # Update player paddle position
         if not paused_pong:
             if player_movement_key[0]:
-                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * player_movement_key[1], dt)
+                paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2) - paddle_height * 0.8 * player_movement_key[1], dt)
             else:
                 if pygame.mouse.get_pressed()[0]:  # Allow mouse control
                     paddle_player.follow_target(mouse_y, dt)
                 else:
                     paddle_player.follow_target(paddle_player.y + (paddle_player.height // 2), dt)
 
-        # Update ball and AI paddle
-        if not paused_pong:
+            # Update ball and AI paddle
             ball.update(dt)
-            paddle_ai.follow_target(ball.y, dt)
+
+            # Checks if ball is really close to player and if so moves to center
+            if ball.x < sw // 4:
+                paddle_ai.follow_target(sh // 2, dt)
+            else:
+                paddle_ai.follow_target(ball.y, dt)
 
             # Detect collisions
             reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai)
@@ -311,11 +318,11 @@ def main_loop():
 
             # Draw the dotted line in the middle
             line_color = (220, 220, 224)  # White color for the line
-            line_width = 5  # Width of each line segment
+            line_width = sh // 150  # Width of each line segment
             line_height = sh // 30  # Height of each line segment
             gap = sh // 31  # Gap between line segments
             for y in range(0, sh, line_height + gap):
-                pygame.draw.rect(screen, line_color, ((sw // 2) - (line_width // 2), y, line_width, line_height))
+                pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
 
             # Draw the Scoreboard
             score_player_text.update(str(score_player))
@@ -349,6 +356,10 @@ def main_loop():
                 countdown_text.draw(screen)
             if end_game:
                 win_lose.draw(screen)
+        
+        # Draw black rectangles on the left and right sides of the screen
+        pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
+        pygame.draw.rect(screen, (12, 12, 15), (sw_m_half + sw, 0, sw_m_half, sh))  # Right side
 
         pygame.display.flip()  # Update the display
     
