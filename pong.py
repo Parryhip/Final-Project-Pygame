@@ -9,8 +9,7 @@ import math
 # - Add difficulty (maybe in beginning. At least add difficulty for AI)
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
-# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files) - IMPORTANT
-# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit)) - IMPORTANT
+# - Fix Veriticall line Bug!!! ITS STILL THERE AHFDHGFDGFDGS - IMPORTANT
 # - Maybe add an exit key?
 # - Add a leaderboard at end of game - IMPORTANT
 
@@ -62,7 +61,7 @@ class Circle:
         pygame.draw.circle(surface, (10,10,13), (self.x, self.y), self.radius + 3)
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
-    def detect_collision_screen(self, score_player, score_ai):
+    def detect_collision_screen(self, score_player, score_ai, sw_m_half):
         # Handle collision with the top and bottom of the screen
         if self.y < self.radius:  # Top of the screen
             self.y = self.radius
@@ -75,10 +74,10 @@ class Circle:
             self.speed += (self.base_speed - self.speed) * 0.05
 
         # Handle collision with the left and right of the screen (scoring logic)
-        if self.x < self.radius:  # Left of the screen
+        if self.x < self.radius + sw_m_half:  # Left of the screen
             return True, score_player, score_ai + 1
 
-        elif self.x > pygame.display.get_surface().get_width() - self.radius:  # Right of the screen
+        elif self.x > pygame.display.get_surface().get_width() - self.radius - sw_m_half:  # Right of the screen
             return True, score_player + 1, score_ai
 
         return False, score_player, score_ai
@@ -197,6 +196,61 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
+def leaderboard():
+    #going to leaderboard loop
+    while run:
+        #clear screen
+        screen.fill((255,255,255))
+
+        #score surfaces
+        scoresurfaces = []
+
+        #show leaderboard!
+        cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+        
+        #surfaces
+        title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+
+        num = 1
+
+        for score in cpmleaderboard:
+            scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
+            num += 1
+
+
+        for event in pygame.event.get():
+            #checing if the user clicked the X button
+            if event.type == pygame.QUIT:
+                run = False
+            #checking events of buttons
+            for button in cpm_buttons:
+                returnvalue = button.is_clicked()
+                if returnvalue:
+                    if button == go_back_to_main_screen:
+                        return
+                    if button == play_again:
+                        cpm(username)
+                        return
+
+        #variable for showing first score
+        position = (1000, 500)
+
+        #surface showing
+        screen.blit(title_surface, (1000, 470))
+        for surface in scoresurfaces:
+            screen.blit(surface, position)
+            position = (1000, position[1] + 30)
+
+        for button in cpm_buttons:
+            button.draw(screen)
+
+        #updating displays
+        pygame.display.flip()
+
+        #setting frame_rate
+        clock.tick(60)
+
+
 def pong_loop():
     sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
     sw_m = pygame.display.Info().current_w  # Screen dimensions
@@ -226,14 +280,16 @@ def pong_loop():
 
     win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw_m_half + sw // 2, int(sh // 1.2), center=True)
 
+    start_text = Text("Press Anything to Start Game", int(sh // 30), (255, 255, 255), sw_m_half + sw // 2, int(sh // 2), center=True)
+
     running = True
     reset_game = False
 
-    cooldown = True
-    cooldown_start_time = pygame.time.get_ticks()
+    cooldown = False
+    cooldown_start_time = 0
     cooldown_timer = 3
 
-    paused_pong = False
+    paused_pong = True
     scene = "pong"
 
     score_player = 0
@@ -241,11 +297,17 @@ def pong_loop():
     score = 0
 
     end_game = False
+
+    start_game = True
+    surface_transparent = pygame.Surface((sw_m,sh), pygame.SRCALPHA)
     
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        if start_game:
+            paused_pong = True
 
         if reset_game:
             ball.reset_ball(screen)
@@ -274,6 +336,11 @@ def pong_loop():
             if event.type == pygame.QUIT:
                 running = False
                 break
+            if start_game:
+                if event.type in [pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN]:
+                    start_game = False
+                    cooldown = True
+                    cooldown_start_time = pygame.time.get_ticks()
             if not paused_pong:
                 if event.type == pygame.KEYDOWN:
                     # Handle player movement keys
@@ -306,13 +373,13 @@ def pong_loop():
             ball.update(dt)
 
             # Checks if ball is really close to player and if so moves to center
-            if ball.x < sw // 4:
+            if ball.x < sw_m_half + sw // 4:
                 paddle_ai.follow_target(sh // 2, dt)
             else:
                 paddle_ai.follow_target(ball.y, dt)
 
             # Detect collisions
-            reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai)
+            reset_game, score_player, score_ai = ball.detect_collision_screen(score_player, score_ai, sw_m_half)
             ball.detect_collision_paddle(paddle_player, paddle_ai)
 
         if scene == "pong":
@@ -359,6 +426,10 @@ def pong_loop():
                 countdown_text.draw(screen)
             if end_game:
                 win_lose.draw(screen)
+            if start_game:
+                pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
+                screen.blit(surface_transparent, (0,0))
+                start_text.draw(screen)
         
         # Draw black rectangles on the left and right sides of the screen
         pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
