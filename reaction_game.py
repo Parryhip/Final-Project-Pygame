@@ -85,10 +85,11 @@ while True:
 
                 except NameError:
                      reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                     
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
               except TypeError:
                      reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000,2)} MS\n press q to quit, and r to play again' , True , color)
                    
                      
                      
