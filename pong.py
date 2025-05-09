@@ -47,18 +47,19 @@ class Text:
 
 
 class Circle:
-    def __init__(self, x, y, radius, color):
+    def __init__(self, x, y, radius, color, sh):
         self.x = x
         self.y = y
         self.radius = radius
         self.color = color
         self.direction = random.choice([random.randint(-45, 45), random.randint(135, 235)])
-        self.speed = 0.75
-        self.base_speed = 0.75
+        self.base_speed = sh / 1000  # Base speed of the ball
+        self.speed = self.base_speed
         self.moving = False
         self.collision_timer = 0  # Timer to prevent immediate re-collision
 
     def draw(self, surface):
+        pygame.draw.circle(surface, (10,10,13), (self.x, self.y), self.radius + 3)
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
     def detect_collision_screen(self, score_player, score_ai):
@@ -90,7 +91,7 @@ class Circle:
 
         for paddle in [paddle_player, paddle_ai]:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
-               (self.y + self.radius > paddle.y - abs(paddle.speed) * 10 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 10):
+               (self.y + self.radius > paddle.y - abs(paddle.speed) * 15 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 15):
                 self.collision_timer = 10
                 #print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
                 #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
@@ -111,13 +112,13 @@ class Circle:
                 else:
                     self.direction = 180 - (self.direction % 360)
                     self.direction += paddle_speed_influence
-                self.direction = round(self.direction,1)  # Normalize direction to [0, 360)
+
+                self.direction = round(self.direction,1)  # Round direction to 1 decimal place
 
                     # Prevent ball from getting stuck in near-vertical angles
                 normalized_direction = self.direction % 360
                 if normalized_direction > 180:
                     normalized_direction -= 360  # Normalize to range -180 to 180
-                print(self.direction)
                 if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
                     if normalized_direction > 0:
                         self.direction -= 15
@@ -128,7 +129,6 @@ class Circle:
                         self.direction -= 15
                     else:
                         self.direction += 15
-                print(self.direction)
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
@@ -174,8 +174,9 @@ class Paddle:
         self.y = (self.scrn_hei // 2) - (self.height // 2)  # Reset paddle to the center of the screen
 
     def follow_target(self, target_pos, dt):
+        base_speed = self.scrn_hei / 750  # Base speed of the paddle
         # Smoothly move paddle towards the target position
-        self.speed = ((target_pos - (self.height // 2)) - self.y) * self.smoothness
+        self.speed = ((target_pos - (self.height // 2)) - self.y) * self.smoothness * base_speed
         self.y += self.speed * dt
 
         # Prevent paddle from going out of bounds (top and bottom)
@@ -208,9 +209,9 @@ def main_loop():
     pygame.display.set_caption("Pong Game")
 
     # Initialize ball and paddles
-    ball = Circle(sw // 2, sh // 2, sh / 45, generic_color)
+    ball = Circle(sw // 2, sh // 2, sh / 45, generic_color, sh)
     paddle_player = Paddle(screen, 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.027, paddle_border)
+    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
 
     # Initialize text
     countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw // 2, sh // 1.5, center=True)
