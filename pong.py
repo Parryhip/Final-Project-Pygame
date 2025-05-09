@@ -9,10 +9,10 @@ import math
 # - Add difficulty (maybe in beginning. At least add difficulty for AI)
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
-# - Fix vertical direction of ball reverter, to make game not have ball bouncing up and down constantly
-# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files)
-# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit))
+# - Change window size to fit screen size better, keep aspect ratio (check if aspect ratio affects transition from menus / files) - IMPORTANT
+# - Add a menu at the beggining (Just a start button on top of a black / slightly transparent screen over the game (with exit)) - IMPORTANT
 # - Maybe add an exit key?
+# - Add a leaderboard at end of game - IMPORTANT
 
 # Initialize Pygame
 pygame.init()
@@ -92,8 +92,8 @@ class Circle:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
                (self.y + self.radius > paddle.y - abs(paddle.speed) * 10 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 10):
                 self.collision_timer = 10
-                print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
+                #print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
+                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
 
                 # Adjust ball speed based on paddle movement
                 paddle_speed_influence = paddle.speed * 14
@@ -111,10 +111,24 @@ class Circle:
                 else:
                     self.direction = 180 - (self.direction % 360)
                     self.direction += paddle_speed_influence
+                self.direction = round(self.direction,1)  # Normalize direction to [0, 360)
 
                     # Prevent ball from getting stuck in near-vertical angles
-                    if 75 < abs(self.direction % 360) < 105 or 255 < abs(self.direction % 360) < 285:
-                        self.direction += 15 if paddle_speed_influence > 0 else -15
+                normalized_direction = self.direction % 360
+                if normalized_direction > 180:
+                    normalized_direction -= 360  # Normalize to range -180 to 180
+                print(self.direction)
+                if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
+                    if normalized_direction > 0:
+                        self.direction -= 15
+                    else:
+                        self.direction += 15
+                elif 255 < abs(normalized_direction) < 285:  # Near 270 degrees
+                    if normalized_direction > 0:
+                        self.direction -= 15
+                    else:
+                        self.direction += 15
+                print(self.direction)
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
@@ -122,8 +136,8 @@ class Circle:
                 else:
                     self.x = paddle.x - self.radius - 1
 
-                print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
+                #print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
+                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
 
     def reset_ball(self, screen):
         self.x = screen.get_width() // 2
@@ -196,7 +210,7 @@ def main_loop():
     # Initialize ball and paddles
     ball = Circle(sw // 2, sh // 2, sh / 45, generic_color)
     paddle_player = Paddle(screen, 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
+    paddle_ai = Paddle(screen, sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.027, paddle_border)
 
     # Initialize text
     countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw // 2, sh // 1.5, center=True)
@@ -309,7 +323,7 @@ def main_loop():
             score_AI_text.draw(screen)
 
             if not paused_pong:
-                if score_ai >= 3:
+                if score_ai >= 7:
                     end_game = True
                     reset_game = True
                     cooldown_timer = 5
@@ -317,7 +331,7 @@ def main_loop():
                     win_lose.update("Loser")
 
                 
-                elif score_player >= 3:
+                elif score_player >= 7:
                     end_game = True
                     reset_game = True
                     cooldown_timer = 5
