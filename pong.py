@@ -66,7 +66,7 @@ class Paddle:
         self.y = self.y + ((mouse_y - (self.height // 2))-self.y)*self.smoothness*dt  # Center the paddle vertically based on mouse Y position
 
 
-def main_loop():
+def pong_loop():
     # Set the screen dimensions
     sw = 1000
     sh = 750
