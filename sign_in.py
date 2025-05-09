@@ -475,6 +475,3 @@ def sign_in_main():
                 pass
             else:
                 return username
-
-print(sign_in_main())
-
