@@ -55,9 +55,8 @@ class Button_Better(Button):
         x -= (width // 2)
         y -= (height // 2)
         super().__init__(x, y, width, height, text, color, hover_color)
-        self.hover_size_text = hover_size // 2
+        self.hover_size = hover_size
         self.text_size = text_size
-        self.rect_hover = pygame.Rect(x - hover_size, y - hover_size, width + 2 * hover_size, height + 2 * hover_size)
         self.font = None
         self.text_color = text_color
         self.border = border
@@ -68,11 +67,12 @@ class Button_Better(Button):
     def draw(self, surface):
 
         if self.render_text:
+            self.rect_hover = pygame.Rect(self.rect.x - self.hover_size, self.rect.y - self.hover_size, self.rect.width + 2 * self.hover_size, self.rect.height + 2 * self.hover_size)
             # Change color on hover 
             mouse_pos = pygame.mouse.get_pos() 
             if self.rect.collidepoint(mouse_pos): 
                 pygame.draw.rect(surface, self.hover_color, (self.rect_hover), border_radius=self.border) 
-                self.text_object.update(self.text, self.text_size+self.hover_size_text)
+                self.text_object.update(self.text, self.text_size + self.hover_size // 2)
             else: 
                 pygame.draw.rect(surface, self.color, self.rect, border_radius=self.border) 
                 self.text_object.update(self.text, self.text_size)
@@ -296,11 +296,11 @@ def leaderboard(screen): # SAMUALS CODE NEED TO GET BETTER ADAPTED TO MINE
         clock.tick(60)
 
 
-def pong_loop():
-    sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
-    sw_m = pygame.display.Info().current_w  # Screen dimensions
-    screen = pygame.display.set_mode((sw_m, sh))
-    clock = pygame.time.Clock()
+def pong_loop(username, screen, clock):
+    #sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
+    #sw_m = pygame.display.Info().current_w  # Screen dimensions
+    sh = 1375
+    sw_m = 2560
 
     sw = int(sh*(4/3)) # Aspect sw
     sw_m_half = (sw_m -sw) // 2
@@ -506,8 +506,3 @@ def pong_loop():
     
     pygame.quit()
     return score
-
-
-score = pong_loop()
-
-print(score)
