@@ -64,7 +64,7 @@ while True:
               try:    
                 try:
                     if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40 and reaction_time <= 1000000 and click == False:
-                        text = smallfont.render(f'Your reaction time is {reaction_time*1000} MS\npress q to quit, and r to restart\n(after pressing r to play again, wait \nuntil the message turns to : Click!) \n' , True , color)
+                        text = smallfont.render(f'Your reaction time is {round(reaction_time*1000,2)} MS\npress q to quit, and r to restart\n(after pressing r to play again, wait \nuntil the message turns to : Click!) \n' , True , color)
                         score = reaction_time
                         click = True
                         print(score)
@@ -89,7 +89,7 @@ while True:
                      text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
               except TypeError:
                      reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000,2)} MS\n press q to quit, and r to play again' , True , color)
+                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
                    
                      
                      
@@ -138,7 +138,7 @@ while True:
                             score = None
                         except TypeError:
                               reaction_time = 1000000
-                              text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {reaction_time*1000} MS\n press q to quit, and r to play again' , True , color)
+                              text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000,2)} MS\n press q to quit, and r to play again' , True , color)
                              
              
 
