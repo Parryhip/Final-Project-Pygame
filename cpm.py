@@ -9,12 +9,7 @@ from leaderboard import *
 #importing csv
 import csv
 
-#initializing pygame's window
-screen = pygame.display.set_mode((2560, 1375))
-screen.fill((255,255,255))
-
 #setting up the clock to keep track of time
-clock = pygame.time.Clock()
 time_event = pygame.USEREVENT + 1
 pygame.time.set_timer(time_event, 1000)
 
@@ -26,7 +21,7 @@ font = pygame.font.SysFont('Arial', 30)
 
 
 #function for the clicks per minute game
-def cpm(username):
+def cpm(username, screen, clock):
     #set the run variable to true to have a while True loop
     run = True
 
