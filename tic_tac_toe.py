@@ -28,7 +28,8 @@ no_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 1
 yes_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 240, 100, 100, "Yes", "Blue", "White")
 next_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Next", "Blue", "White")
 
-def tic_leaderboard(someone_has_won, username):
+def tic_leaderboard(someone_has_won):
+    tic_tac_leaderboard = get_leaderboard(2)
     font = pygame.font.SysFont(None, 24)
     if someone_has_won == "Player":
             #going to leaderboard loop
@@ -40,10 +41,10 @@ def tic_leaderboard(someone_has_won, username):
             scoresurfaces = []
 
             #show leaderboard!
-            cpm_leaderboard_title = "----------TOP 10 CPM SCORES----------"
+            tic_leaderboard_title = "----------TOP 10 TIC TAC SCORES----------"
             
             #surfaces
-            title_surface = font.render(cpm_leaderboard_title, True, (0,0,0))
+            title_surface = font.render(tic_leaderboard_title, True, (0,0,0))
 
             num = 1
 
@@ -56,15 +57,6 @@ def tic_leaderboard(someone_has_won, username):
                 #checing if the user clicked the X button
                 if event.type == pygame.QUIT:
                     run = False
-                #checking events of buttons
-                for button in cpm_buttons:
-                    returnvalue = button.is_clicked()
-                    if returnvalue:
-                        if button == go_back_to_main_screen:
-                            return
-                        if button == play_again:
-                            cpm(username)
-                            return
 
             #variable for showing first score
             position = (1000, 500)
@@ -74,9 +66,6 @@ def tic_leaderboard(someone_has_won, username):
             for surface in scoresurfaces:
                 screen.blit(surface, position)
                 position = (1000, position[1] + 30)
-
-            for button in cpm_buttons:
-                button.draw(screen)
 
             #updating displays
             pygame.display.flip()
@@ -413,7 +402,7 @@ def tic_tac_toe(username):
         new_score = current_score + 1
         input_score(username, 2, new_score)
 
-    tic_leaderboard(someone_has_won, username)
+    tic_leaderboard(someone_has_won)
 
     return
 
