@@ -44,13 +44,13 @@ def main():
                 time.sleep(0.2)
             tic_tac_button.draw(screen)
             if tic_tac_button.is_clicked():
-                tic_tac_toe(username)
+                tic_tac_toe(username, screen, clock)
             click_per_minute_button.draw(screen)
             if click_per_minute_button.is_clicked():
-                cpm(username)
+                cpm(username, screen, clock)
             pong_button.draw(screen)
             if pong_button.is_clicked():
-                pong_loop(username)
+                pong_loop(username, screen, clock)
             platformer_button.draw(screen)
             if platformer_button.is_clicked():
                 pass

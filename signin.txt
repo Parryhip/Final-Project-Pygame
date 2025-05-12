@@ -1,5 +1,2 @@
-username,hashedpassword,salt
-samuel,$2b$12$JKRfIDeRVsCI45e1vyAkEezKNnN2Br4ELLhaoSdvSVn3iGUMhDbDu
-d,$2b$12$N9yj7lUbKHtwaU7TtOjI8Ok812d/FyGOSWtPddHs.B5dilKO5n7WS
-g,$2b$12$V4XyNGrv8uP/2YwkeKaNzuhuAdfymFNViXOzAdOrSGVWAxFONFIIW
-glob,$2b$12$04h.sJKTlHqa67bqG7p/v.7f7pFm9hno.Oi5O54sb5Zz/3yZP9Fnq
+username,hashedpassword
+samuel,$2b$12$TEGXXr5jDz/lzExYYnjAw.6d6.xL8UqVjaJuL8NWhKRJFVR7hYIbu
