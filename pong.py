@@ -32,7 +32,7 @@ class Text:
         self.text = text
         if size != "Default":
             self.font_size = size
-            self.font = pygame.font.Font("fonts/bit5x5.ttf", size)
+            self.font = pygame.font.Font("fonts/bit5x5.ttf", int(size))
 
     def draw(self, surface):
         rendered_text = self.font.render(self.text, True, self.color)
@@ -55,7 +55,8 @@ class Button_Better(Button):
         x -= (width // 2)
         y -= (height // 2)
         super().__init__(x, y, width, height, text, color, hover_color)
-        self.hover_size = hover_size
+        self.hover_size_base = hover_size
+        self.hover_size = 0
         self.text_size = text_size
         self.font = None
         self.text_color = text_color
@@ -64,21 +65,24 @@ class Button_Better(Button):
         self.text_object = Text(text, text_size, text_color, x + width // 2 - 4, y + height // 2 - 3, center=True)
 
 
-    def draw(self, surface):
+    def draw(self, surface, dt=0):
 
         if self.render_text:
-            self.rect_hover = pygame.Rect(self.rect.x - self.hover_size, self.rect.y - self.hover_size, self.rect.width + 2 * self.hover_size, self.rect.height + 2 * self.hover_size)
             # Change color on hover 
             mouse_pos = pygame.mouse.get_pos() 
             if self.rect.collidepoint(mouse_pos): 
-                pygame.draw.rect(surface, self.hover_color, (self.rect_hover), border_radius=self.border) 
-                self.text_object.update(self.text, self.text_size + self.hover_size // 2)
+                self.hover_size += (self.hover_size_base - self.hover_size) * 0.015 * dt
+                color_current = self.hover_color
+
             else: 
-                pygame.draw.rect(surface, self.color, self.rect, border_radius=self.border) 
-                self.text_object.update(self.text, self.text_size)
+                self.hover_size += (0 - self.hover_size) * 0.01 * dt
+                color_current = self.color
             
-            # Render text 
-            
+            self.rect_hover = pygame.Rect(self.rect.x - self.hover_size, self.rect.y - self.hover_size, self.rect.width + 2 * self.hover_size, self.rect.height + 2 * self.hover_size)
+            # Render objects
+            pygame.draw.rect(surface, color_current, (self.rect_hover), border_radius=self.border) 
+            self.text_object.update(self.text, self.text_size + self.hover_size // 2)
+
             self.text_object.draw(surface)
 
     def is_clicked(self):
@@ -493,7 +497,7 @@ def pong_loop(username, screen, clock):
                 pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
                 screen.blit(surface_transparent, (0,0))
                 start_text.draw(screen)
-                exit_button.draw(screen)
+                exit_button.draw(screen,dt)
         
         elif scene == "leaderboard":
             leaderboard_button.draw(screen)
@@ -506,3 +510,9 @@ def pong_loop(username, screen, clock):
     
     pygame.quit()
     return score
+
+""""""
+screen = pygame.display.set_mode((2560, 1375))
+clock = pygame.time.Clock()
+
+pong_loop("John", screen, clock)
