@@ -21,7 +21,7 @@ reaction_speed_button = Button(screen.get_width() / 2 + 300, 700, 300, 100, "Rea
 
 
 def main():
-    username = sign_in()
+    username = sign_in_main()
     start_button_pressed = False
     running = True
     while running:

@@ -205,6 +205,3 @@ def cpm(username):
 
         #setting frame_rate
         clock.tick(60)
-
-#calling of clicks per minute function (remove at the end!)
-cpm("samuel")
