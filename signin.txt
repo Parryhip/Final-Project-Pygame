@@ -1,1 +1,2 @@
-username,hashedpassword,salt
+username,hashedpassword
+samuel,$2b$12$TEGXXr5jDz/lzExYYnjAw.6d6.xL8UqVjaJuL8NWhKRJFVR7hYIbu
