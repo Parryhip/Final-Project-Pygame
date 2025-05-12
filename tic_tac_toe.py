@@ -26,16 +26,17 @@ tic_tac_X = pygame.image.load("tic_tac_toe_X.png")
 tic_tac_O = pygame.image.load("tic_tac_toe_O.png")
 no_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 120, 100, 100, "No", "Blue", "White")
 yes_button = Button((screen.get_width() / 2) + 120, (screen.get_height() / 2) - 240, 100, 100, "Yes", "Blue", "White")
-next_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Next", "Blue", "White")
+next_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Next", "Blue", "Red")
 
-def tic_leaderboard(someone_has_won):
+def tic_leaderboard(someone_has_won, tic_screen, clock):
+    run = True
     tic_tac_leaderboard = get_leaderboard(2)
     font = pygame.font.SysFont(None, 24)
     if someone_has_won == "Player":
             #going to leaderboard loop
         while run:
             #clear screen
-            screen.fill((255,255,255))
+            tic_screen.fill("white")
 
             #score surfaces
             scoresurfaces = []
@@ -62,10 +63,14 @@ def tic_leaderboard(someone_has_won):
             position = (1000, 500)
 
             #surface showing
-            screen.blit(title_surface, (1000, 470))
+            tic_screen.blit(title_surface, (1000, 470))
             for surface in scoresurfaces:
-                screen.blit(surface, position)
+                tic_screen.blit(surface, position)
                 position = (1000, position[1] + 30)
+            
+            next_button.draw(tic_screen)
+            if next_button.is_clicked():
+                run = False
 
             #updating displays
             pygame.display.flip()
@@ -111,7 +116,7 @@ def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, t
     elif tic_1 == False and tic_2 == False and tic_3 == False and tic_4 == False and tic_5 == False and tic_6 == False and tic_7 == False and tic_9 == False:
         return "Computer"
 
-def tic_tac_toe(username):
+def tic_tac_toe(username, screen, clock):
     font = pygame.font.SysFont(None, 24)
     again_text = font.render('Play Again?', True, "white")
     running = True
@@ -402,8 +407,6 @@ def tic_tac_toe(username):
         new_score = current_score + 1
         input_score(username, 2, new_score)
 
-    tic_leaderboard(someone_has_won)
+    tic_leaderboard(someone_has_won, screen, clock)
 
     return
-
-tic_tac_toe("asdf")
