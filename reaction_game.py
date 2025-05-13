@@ -10,7 +10,7 @@ import random
 pygame.init()
  
 # screen resolution
-res = (1580,1320)
+res = (2560,1375)
  
 # opens up a window
 screen = pygame.display.set_mode(res)
@@ -44,6 +44,7 @@ time.sleep(wait_time1)
 text = smallfont.render('Click!' , True , color)
 click = False
 score = None
+random_pop = random.randint(1,5)
 
 
 
@@ -61,20 +62,11 @@ while True:
                
                 #if the mouse is clicked on the
                 # button the game is terminated
-              try:    
-                try:
-                    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40 and reaction_time <= 1000000 and click == False:
+                    if width/2 <= mouse[0] <= width/random_pop and height/2 <= mouse[1] <= height/2+40 and click == False:
                         text = smallfont.render(f'Your reaction time is {round(reaction_time*1000,2)} MS\npress q to quit, and r to restart\n(after pressing r to play again, wait \nuntil the message turns to : Click!) \n' , True , color)
                         score = reaction_time
                         click = True
                         print(score)
-                        
-
-
-
-
-                    else:
-                        text = smallfont.render(f'press q to quit, and r to restart\n(after pressing r, wait until \nthe message turns to : Click!) to play again\n(do not click before the message\n or after you already clicked!), \nThis is your reaction time\n: {score*1000}ms' , True , color)
 
 
 
@@ -82,15 +74,6 @@ while True:
 
 
 
-
-                except NameError:
-                     reaction_time = 1000000
-                     
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
-              except TypeError:
-                     reaction_time = 1000000
-                     text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000, 2)} MS\n press q to quit, and r to play again' , True , color)
-                   
                      
                      
        
@@ -104,7 +87,7 @@ while True:
                             pygame.init()
 
                             # screen resolution
-                            res = (1580,1320)
+                            res = (2560,1375)
 
                             # opens up a window
                             screen = pygame.display.set_mode(res)
@@ -136,6 +119,9 @@ while True:
                             text = smallfont.render('Click!' , True , color)
                             click = False
                             score = None
+                            random_place = True
+                            if random_place == True:
+                                 random_pop = random.randint(1,5)
                         except TypeError:
                               reaction_time = 1000000
                               text = smallfont.render(f'You clicked before it tells you to\n,cheating will end up with a super \nhigh reaction time! your \nreaction is {round(reaction_time*1000,2)} MS\n press q to quit, and r to play again' , True , color)
@@ -148,7 +134,7 @@ while True:
 
 
     # fills the screen with a color
-    screen.fill((60,25,60))
+    screen.fill((100,25,60))
      
     # stores the (x,y) coordinates into
     # the variable as a tuple
@@ -156,11 +142,13 @@ while True:
      
     # if mouse is hovered on a button it
     # changes to lighter shade  
-    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
-        pygame.draw.rect(screen,color_light,[width/2,height/2,140,40])
+
+
+    if width/2 <= mouse[0] <= width/random_pop and height/2 <= mouse[1] <= height/2+40:
+        pygame.draw.rect(screen,color_light,[width/random_pop,height/2,200,40])
          
     else:
-        pygame.draw.rect(screen,color_dark,[width/2,height/2,140,40])
+        pygame.draw.rect(screen,color_dark,[width/random_pop,height/2,200,40])
      
     # superimposing the text onto our button
     screen.blit(text , (width/2+300,height/2))
