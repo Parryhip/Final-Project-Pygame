@@ -30,8 +30,8 @@ def game_selection(username, screen, clock):
         screen.blit(game_selection_title_surface, (screen.get_width() / 2 - 250, 500))
         back_button.draw(screen)
         if back_button.is_clicked():
-            game_selection_running = False
             time.sleep(0.2)
+            return
         click_per_minute_button.draw(screen)
         if click_per_minute_button.is_clicked():
             cpm(username, screen, clock)
@@ -61,9 +61,8 @@ def main():
         start_button.draw(screen)
         exit_button.draw(screen)
         if start_button.is_clicked():
-            title_running = False
-            game_selection_running = True
             time.sleep(0.2)
+            game_selection(username, screen, clock)
         if exit_button.is_clicked():
             running = False
         pygame.display.flip()
