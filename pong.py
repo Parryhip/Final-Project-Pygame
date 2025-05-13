@@ -1,5 +1,6 @@
 # Gabriel Crozier - Pong Game
 from classes import Button
+from leaderboard import get_leaderboard, get_score
 
 import pygame
 import random
@@ -11,8 +12,8 @@ import math
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
 # - Fix Veriticall line Bug!!! ITS STILL THERE AHFDHGFDGFDGS - IMPORTANT
-# - Maybe add an exit key?
-# - Add a leaderboard at end of game - IMPORTANT
+# - Split into functions: Game Initialization, Event Handling, Game Logic, Drawing, Cooldown Logic, Main Game Loop
+# - Check to see if new player can register scores??!!?? IMPORTANT
 
 # Initialize Pygame
 pygame.init()
@@ -32,13 +33,15 @@ class Text:
         self.text = text
         if size != "Default":
             self.font_size = size
-            self.font = pygame.font.Font("fonts/bit5x5.ttf", size)
+            self.font = pygame.font.Font("fonts/bit5x5.ttf", int(size))
 
     def draw(self, surface):
         rendered_text = self.font.render(self.text, True, self.color)
         text_rect = rendered_text.get_rect()
         if self.center:
             text_rect.center = (self.x, self.y)
+        elif self.center == "Right":
+            text_rect.topright = (self.x, self.y)
         else:
             text_rect.topleft = (self.x, self.y)
 
@@ -55,7 +58,8 @@ class Button_Better(Button):
         x -= (width // 2)
         y -= (height // 2)
         super().__init__(x, y, width, height, text, color, hover_color)
-        self.hover_size = hover_size
+        self.hover_size_base = hover_size
+        self.hover_size = 0
         self.text_size = text_size
         self.font = None
         self.text_color = text_color
@@ -64,21 +68,24 @@ class Button_Better(Button):
         self.text_object = Text(text, text_size, text_color, x + width // 2 - 4, y + height // 2 - 3, center=True)
 
 
-    def draw(self, surface):
+    def draw(self, surface, dt=0):
 
         if self.render_text:
-            self.rect_hover = pygame.Rect(self.rect.x - self.hover_size, self.rect.y - self.hover_size, self.rect.width + 2 * self.hover_size, self.rect.height + 2 * self.hover_size)
             # Change color on hover 
             mouse_pos = pygame.mouse.get_pos() 
             if self.rect.collidepoint(mouse_pos): 
-                pygame.draw.rect(surface, self.hover_color, (self.rect_hover), border_radius=self.border) 
-                self.text_object.update(self.text, self.text_size + self.hover_size // 2)
+                self.hover_size += (self.hover_size_base - self.hover_size) * 0.015 * dt
+                color_current = self.hover_color
+
             else: 
-                pygame.draw.rect(surface, self.color, self.rect, border_radius=self.border) 
-                self.text_object.update(self.text, self.text_size)
+                self.hover_size += (0 - self.hover_size) * 0.01 * dt
+                color_current = self.color
             
-            # Render text 
-            
+            self.rect_hover = pygame.Rect(self.rect.x - self.hover_size, self.rect.y - self.hover_size, self.rect.width + 2 * self.hover_size, self.rect.height + 2 * self.hover_size)
+            # Render objects
+            pygame.draw.rect(surface, color_current, (self.rect_hover), border_radius=self.border) 
+            self.text_object.update(self.text, self.text_size + self.hover_size // 2)
+
             self.text_object.draw(surface)
 
     def is_clicked(self):
@@ -137,9 +144,6 @@ class Circle:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
                (self.y + self.radius > paddle.y - abs(paddle.speed) * 15 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 15):
                 self.collision_timer = 10
-                #print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
-
                 # Adjust ball speed based on paddle movement
                 paddle_speed_influence = paddle.speed * 14
                 self.speed += abs(paddle.speed) * 0.05
@@ -164,8 +168,6 @@ class Circle:
                 
                 if normalized_direction > 180:
                     normalized_direction -= 360  # Normalize to range -180 to 180
-                print(f"START  norm direction {normalized_direction}")
-                print(f"START direction {self.direction}")
                 if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
                     if normalized_direction > 0:
                         self.direction -= 15
@@ -176,16 +178,12 @@ class Circle:
                         self.direction -= 15
                     else:
                         self.direction += 15
-                print(f"END direction {self.direction}\n")
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
                     self.x = paddle.x + paddle.width + self.radius + 1
                 else:
                     self.x = paddle.x - self.radius - 1
-
-                #print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
 
     def reset_ball(self, screen):
         self.x = screen.get_width() // 2
@@ -241,66 +239,12 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
-def leaderboard(screen): # SAMUALS CODE NEED TO GET BETTER ADAPTED TO MINE
-    #going to leaderboard loop
-    while run:
-        #clear screen
-        screen.fill((255,255,255))
-
-        #score surfaces
-        scoresurfaces = []
-
-        #show leaderboard!
-        pong_leader = "----------TOP 10 CPM SCORES----------"
-        
-        #surfaces
-        title_surface = font.render(pong_leader, True, (0,0,0))
-
-        num = 1
-
-        for score in cpmleaderboard:
-            scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
-            num += 1
-
-
-        for event in pygame.event.get():
-            #checing if the user clicked the X button
-            if event.type == pygame.QUIT:
-                run = False
-            #checking events of buttons
-            for button in cpm_buttons:
-                returnvalue = button.is_clicked()
-                if returnvalue:
-                    if button == go_back_to_main_screen:
-                        return
-                    if button == play_again:
-                        cpm(username)
-                        return
-
-        #variable for showing first score
-        position = (1000, 500)
-
-        #surface showing
-        screen.blit(title_surface, (1000, 470))
-        for surface in scoresurfaces:
-            screen.blit(surface, position)
-            position = (1000, position[1] + 30)
-
-        for button in cpm_buttons:
-            button.draw(screen)
-
-        #updating displays
-        pygame.display.flip()
-
-        #setting frame_rate
-        clock.tick(60)
-
 
 def pong_loop(username, screen, clock):
-    #sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
-    #sw_m = pygame.display.Info().current_w  # Screen dimensions
-    sh = 1375
-    sw_m = 2560
+    sh = pygame.display.Info().current_h  # 30, 50 = taskbar & title bar height Screen dimensions
+    sw_m = pygame.display.Info().current_w  # Screen dimensions
+    #sh = 1375
+    #sw_m = 2560
 
     sw = int(sh*(4/3)) # Aspect sw
     sw_m_half = (sw_m -sw) // 2
@@ -337,11 +281,10 @@ def pong_loop(username, screen, clock):
     cooldown_timer = 3
 
     paused_pong = True
-    scene = "pong"
 
     score_player = 0
     score_ai = 0
-    score = 0
+    score = get_score(username, 4)
 
     end_game = False
 
@@ -349,8 +292,49 @@ def pong_loop(username, screen, clock):
     surface_transparent = pygame.Surface((sw_m,sh), pygame.SRCALPHA)
 
     # Leaderboard
-    leaderboard_button = Button_Better(screen.get_width() / 2 - 200, 800, 300, 100, "Leaderboard", "White", 30, (30,30,35), (50,50,57), 5, 15, True)
+
+    scores_got = get_leaderboard(4)
+    leaderboard_text = []
+
     
+
+    # Populate the leaderboard_text list with player scores from scores_got
+    for i in range(len(scores_got)):
+        # Calculate the maximum text length for proper alignment
+        text_length = max(len(f"{scores_got[i][0]}, {scores_got[i][1]}") for i in range(len(scores_got)))
+        leaderboard_text.append(
+            Text(
+                f"{scores_got[i][0]}, {scores_got[i][1]}",  # Format: "PlayerName, Score"
+                sh // 25,  # Font size relative to screen height
+                (255, 255, 255),  # White color for text
+                int(sw_m_half + (sw - (text_length * sw // 45))),  # Align text based on max text length
+                sh // 25,  # Y-coordinate for the first entry
+                center=False  # Align text to the left
+            )
+        )
+
+    # If no scores are available, display a placeholder message
+    if len(scores_got) == 0:
+        text_length = 14  # Length of the placeholder text
+        leaderboard_text.append(
+            Text(
+                "NO PLAYER, NAN",  # Placeholder text
+                sh // 25,  # Font size relative to screen height
+                (255, 255, 255),  # White color for text
+                int(sw_m_half + (sw - (text_length * sw // 45))),  # Align placeholder text
+                sh // 25,  # Y-coordinate for the placeholder
+                center=False  # Align text to the left
+            )
+        )
+    
+    # Define the clipping box
+    clipping_box = pygame.Rect(leaderboard_text[0].x, sh // 30, text_length * sw // 45, sh // 5)  # Example box dimensions
+
+    # Create a subsurface for the clipping area
+    clipping_surface = screen.subsurface(clipping_box)
+
+    scroll_text = Text("Scroll through leaderboard", sh // 60, (155, 155, 155), clipping_box.x + clipping_box.width - sh // 5,
+                        clipping_box.y + clipping_box.height + sh // 60, center="Right")
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
@@ -384,7 +368,6 @@ def pong_loop(username, screen, clock):
                     start_game = True
                     score_ai = 0
                     score_player = 0
-                    score = 0
                     cooldown_timer = 3
                     win_lose.update(" ")
                     end_game = False
@@ -394,14 +377,22 @@ def pong_loop(username, screen, clock):
             if event.type == pygame.QUIT:
                 running = False
                 break
-            if start_game:
-                if event.type in [pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN]:
+
+            elif start_game:
+                if clipping_box.collidepoint(pygame.mouse.get_pos()):
+                    if event.type == pygame.MOUSEWHEEL:
+                        for name in leaderboard_text:
+                                leaderboard_text[0].y += 1.5 * event.y
+                                
+                elif event.type in [pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN]:
                     if exit_button.is_clicked():
-                        running = False
-                        break
-                    start_game = False
-                    cooldown = True
-                    cooldown_start_time = pygame.time.get_ticks()
+                            running = False
+                            break
+                    if event.button == 1:
+                        start_game = False
+                        cooldown = True
+                        cooldown_start_time = pygame.time.get_ticks()
+
             if not paused_pong:
                 if event.type == pygame.KEYDOWN:
                     # Handle player movement keys
@@ -446,57 +437,90 @@ def pong_loop(username, screen, clock):
         # Draw Background
         screen.fill((20, 20, 25))  # Background color
 
-        if scene == "pong":
-            # Draw Everything
+        # Draw Everything
 
-            # Draw the dotted line in the middle
-            line_color = (220, 220, 224)  # White color for the line
-            line_width = sh // 150  # Width of each line segment
-            line_height = sh // 30  # Height of each line segment
-            gap = sh // 31  # Gap between line segments
-            for y in range(0, sh, line_height + gap):
-                pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
+        # Draw the dotted line in the middle
+        line_color = (220, 220, 224)  # White color for the line
+        line_width = sh // 150  # Width of each line segment
+        line_height = sh // 30  # Height of each line segment
+        gap = sh // 31  # Gap between line segments
+        for y in range(0, sh, line_height + gap):
+            pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
 
-            # Draw the Scoreboard
-            score_player_text.update(str(score_player))
-            score_player_text.draw(screen)
-            score_AI_text.update(str(score_ai))
-            score_AI_text.draw(screen)
+        # Draw the Scoreboard
+        score_player_text.update(str(score_player))
+        score_player_text.draw(screen)
+        score_AI_text.update(str(score_ai))
+        score_AI_text.draw(screen)
 
-            if not paused_pong:
-                if score_ai >= 1:
-                    end_game = True
-                    reset_game = True
-                    cooldown_timer = 5
-                    score = 0
-                    win_lose.update("Loser")
+        if not paused_pong:
+            if score_ai >= 7:
+                end_game = True
+                reset_game = True
+                cooldown_timer = 5
+                win_lose.update("Loser")
 
-                
-                elif score_player >= 1:
-                    end_game = True
-                    reset_game = True
-                    cooldown_timer = 5
-                    score = 1
-                    win_lose.update("Winner")
+            
+            elif score_player >= 7:
+                end_game = True
+                reset_game = True
+                cooldown_timer = 5
+                score = int(score) + 1
+                win_lose.update("Winner")
 
-            # Draw paddles and ball
-            ball.draw(screen)
-            paddle_player.draw(screen, dt)
-            paddle_ai.draw(screen, dt)
+        # Draw paddles and ball
+        ball.draw(screen)
+        paddle_player.draw(screen, dt)
+        paddle_ai.draw(screen, dt)
 
-            # Draw the Countdown
-            if cooldown:
-                countdown_text.draw(screen)
-            if end_game:
-                win_lose.draw(screen)
-            if start_game:
-                pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
-                screen.blit(surface_transparent, (0,0))
-                start_text.draw(screen)
-                exit_button.draw(screen)
-        
-        elif scene == "leaderboard":
-            leaderboard_button.draw(screen)
+        # Draw the Countdown if in cooldown phase
+        if cooldown:
+            countdown_text.draw(screen)
+
+        # Display win/lose message at the end of the game
+        if end_game:
+            win_lose.draw(screen)
+
+        # Handle the start game screen
+        if start_game:
+            # Draw a semi-transparent overlay
+            pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
+            screen.blit(surface_transparent, (0, 0))
+
+            # Draw the start game text
+            start_text.draw(screen)
+
+            # Calculate the y-coordinate of the last leaderboard item
+            last_item_y = leaderboard_text[0].y + (sh // 25) * len(leaderboard_text)
+
+            # Draw leaderboard text within the clipping box
+            for i, name in enumerate(leaderboard_text):
+                # Update the leaderboard entry for the current user
+                if name.text.split(", ")[0] == username:
+                    name.update(f"{username}, {score}", sh // 25)
+
+                # Adjust leaderboard scrolling boundaries
+                if leaderboard_text[0].y > sh // 25:
+                    leaderboard_text[0].y += (sh // 25 - leaderboard_text[0].y) * 0.05
+                elif last_item_y < clipping_box.y + clipping_box.height:
+                    leaderboard_text[0].y += (clipping_box.y + clipping_box.height - last_item_y) * 0.003
+
+                # Render the leaderboard text
+                text_surface = name.font.render(name.text, True, name.color)
+                text_rect = text_surface.get_rect(topleft=(leaderboard_text[0].x, leaderboard_text[0].y + i * (sh // 25)))
+
+                # Check if the text intersects with the clipping box
+                if clipping_box.colliderect(text_rect):
+                    # Adjust the text position relative to the clipping surface
+                    adjusted_x = text_rect.x - clipping_box.x
+                    adjusted_y = text_rect.y - clipping_box.y
+                    clipping_surface.blit(text_surface, (adjusted_x, adjusted_y))
+
+            # Draw the scroll instruction text
+            scroll_text.draw(screen)
+
+            # Draw the exit button
+            exit_button.draw(screen, dt)
 
         # Draw black rectangles on the left and right sides of the screen
         pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
@@ -506,3 +530,14 @@ def pong_loop(username, screen, clock):
     
     pygame.quit()
     return score
+
+"""
+sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
+sw_m = pygame.display.Info().current_w  # Screen dimensions
+#sh = 1375
+#sw_m = 2560
+
+screen = pygame.display.set_mode((sw_m, sh))
+clock = pygame.time.Clock()
+
+print(pong_loop("samuel", screen, clock))"""
