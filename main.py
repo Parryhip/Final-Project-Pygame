@@ -22,12 +22,7 @@ back_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Back", "Blue
 tic_tac_button = Button(screen.get_width() / 2 - 200, 900, 300, 100, "Tic Tac Toe", "Purple", "White")
 click_per_minute_button = Button(screen.get_width() / 2 + 300, 900, 300, 100, "Clicks Per Minute", "Red", "White")
 pong_button = Button(screen.get_width() / 2 - 700, 900, 300, 100, "Pong", "Yellow", "White")
-platformer_button = Button(screen.get_width() / 2 - 700, 700, 300, 100, "Platformer", "Green", "White")
-reaction_speed_button = Button(screen.get_width() / 2 + 300, 700, 300, 100, "Reaction Speed Test", "Red", "White")
-cpm_button_clicked = False
-pong_button_clicked = False
-platformer_button_clicked = False
-reaction_speed_button_clicked = False
+platformer_button = Button(screen.get_width() / 2 - 200, 700, 300, 100, "Platformer", "Green", "White")
 
 def main():
     #Using sign in function to get the user to sign in or create an account
@@ -35,6 +30,9 @@ def main():
     start_button_pressed = False
     running = True
     #The main game loop
+    cpm_button_clicked = False
+    pong_button_clicked = False
+    platformer_button_clicked = False
     while running:
         #After every frame fill the screen the color black so that everything previous gets erased
         screen.fill("black")
@@ -80,17 +78,11 @@ def main():
                 pass
             else:
                 platformer_button.draw(screen)
+            #Sends you to platformer game if platformer button is clicked
             if platformer_button.is_clicked():
                 platformer_button_clicked = True
                 pass
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True:
-                pass
-            else:
-                reaction_speed_button.draw(screen)
-            if reaction_speed_button.is_clicked():
-                reaction_speed_button_clicked = True
-                pass
-            if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True or reaction_speed_button_clicked == True:
                 pass
             else:
                 tic_tac_button.draw(screen)
@@ -100,7 +92,6 @@ def main():
             cpm_button_clicked = False
             pong_button_clicked = False
             platformer_button_clicked = False
-            reaction_speed_button_clicked = False
         pygame.display.flip()
         clock.tick(60)
     pygame.quit()
