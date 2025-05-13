@@ -8,6 +8,7 @@ import random # random
 
 # Start the game
 pygame.init()
+font = pygame.font.Font(None, 36)
 
 # Game window
 W = 800
@@ -267,17 +268,15 @@ def check_hit():
                 player["life"] -= 1
                 state["safe"] = time.time() + 3
                 break
-
 def game_over():
-    # Game over
     if player["score"] > state["best"]:
         save_best(player["score"])
-        print("New best!")
-    else:
-        print(f"Best: {state['best']}")
     
-    pygame.quit()
-    exit()
+    font = pygame.font.Font(None, 72)
+    text = font.render(f"Game Over, your score: {player['score']}", True, Red)
+   
+
+
 
 def main():
     # Get best score
