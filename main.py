@@ -67,6 +67,8 @@ def main():
             if click_per_minute_button.is_clicked():
                 cpm(username, screen, clock)
                 cpm_button_clicked = True
+            else:
+                cpm_button_clicked = False
             #These if statements check to see if any buttons before the pong buttons have been pressed and if so make the pong button not be drawn
             if cpm_button_clicked == True:
                 pass
@@ -76,6 +78,8 @@ def main():
             if pong_button.is_clicked():
                 pong_loop(username, screen, clock)
                 pong_button_clicked = True
+            else:
+                pong_button_clicked = False
             if cpm_button_clicked == True or pong_button_clicked == True:
                 pass
             else:
@@ -83,6 +87,8 @@ def main():
             if platformer_button.is_clicked():
                 platformer_button_clicked = True
                 pass
+            else:
+                platformer_button_clicked = False
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True:
                 pass
             else:
@@ -90,6 +96,8 @@ def main():
             if reaction_speed_button.is_clicked():
                 reaction_speed_button_clicked = True
                 pass
+            else:
+                reaction_speed_button_clicked = False
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True or reaction_speed_button_clicked == True:
                 pass
             else:
