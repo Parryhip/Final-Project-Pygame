@@ -1,6 +1,6 @@
 # Gabriel Crozier - Pong Game
 from classes import Button
-from leaderboard import get_leaderboard, get_score
+from leaderboard import get_leaderboard, get_score, input_score
 
 import pygame
 import random
@@ -461,12 +461,13 @@ def pong_loop(username, screen, clock):
                 win_lose.update("Loser")
 
             
-            elif score_player >= 7:
+            elif score_player >= 1:
                 end_game = True
                 reset_game = True
                 cooldown_timer = 5
                 score = int(score) + 1
                 win_lose.update("Winner")
+                input_score(username, 4, score)
 
         # Draw paddles and ball
         ball.draw(screen)
@@ -528,8 +529,7 @@ def pong_loop(username, screen, clock):
 
         pygame.display.flip()  # Update the display
     
-    pygame.quit()
-    return score
+    return
 
 """
 sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
