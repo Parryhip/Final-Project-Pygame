@@ -30,7 +30,7 @@ player = {
     "w": 30,
     "h": 30,
     "speed": 5,
-    "jump": 15,
+    "jump": random.randint(1, 20),
     "life": 3,
     "score": 0,
     "keys": [],
@@ -100,9 +100,9 @@ def save_best(score):
             w = csv.writer(f)
             w.writerows(rows)  # Write all rows back
         
-        print(f"New best!：{score}！")
     except:
-        print("Save score failed")
+        Instrustion_text8 = font.render(f"Save score failed", True, Yellow)
+        win.blit(Instrustion_text8, (10, 160))
 
 def make_level():
     # Clear old things
@@ -206,7 +206,13 @@ def draw():
     life_text = font.render(f"Life: {player['life']}", True, White)
     win.blit(score_text, (10, 10))
     win.blit(life_text, (10, 50))
-    
+    Instrustion_text = font.render(f"Press space to jump, Press left and right to move", True, Yellow)
+    Instrustion_text2 = font.render(f"Avoid spikes and bad guys and spikes,", True, Yellow) 
+    Instrustion_text3 = font.render(f"Find keys(white) to open the door(white)", True, Yellow)
+    win.blit(Instrustion_text, (10, 80))
+    win.blit(Instrustion_text2, (10, 120))
+    win.blit(Instrustion_text3, (10, 160))
+
     # Update screen
     pygame.display.update()
 
@@ -247,14 +253,12 @@ def check_hit():
         if box.colliderect(key):
             player["keys"].append("key")
             game["keys"].remove(key)
-            print("You found a key! Go to door!")
     
     # Check door
     if player["keys"] and box.colliderect(game["door"]):
         player["score"] += 1
         player["keys"].clear()
         make_level()
-        print("Level done!")
     
     # Check bad things
     if time.time() > state["safe"]:
@@ -262,12 +266,10 @@ def check_hit():
             if box.colliderect(bad):
                 player["life"] -= 1
                 state["safe"] = time.time() + 3
-                print(f"Ouch! Life left: {player['life']}")
                 break
 
 def game_over():
     # Game over
-    print(f"Game over! Score: {player['score']}")
     if player["score"] > state["best"]:
         save_best(player["score"])
         print("New best!")
