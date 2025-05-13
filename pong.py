@@ -12,8 +12,6 @@ import math
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
 # - Fix Veriticall line Bug!!! ITS STILL THERE AHFDHGFDGFDGS - IMPORTANT
-# - Maybe add an exit key?
-# - Add a leaderboard at end of game - IMPORTANT
 
 # Initialize Pygame
 pygame.init()
@@ -185,9 +183,6 @@ class Circle:
                 else:
                     self.x = paddle.x - self.radius - 1
 
-                #print(f"END   direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed):<5}\n")
-
     def reset_ball(self, screen):
         self.x = screen.get_width() // 2
         self.y = screen.get_height() // 2
@@ -284,7 +279,6 @@ def pong_loop(username, screen, clock):
     cooldown_timer = 3
 
     paused_pong = True
-    scene = "pong"
 
     score_player = 0
     score_ai = 0
@@ -302,30 +296,34 @@ def pong_loop(username, screen, clock):
 
     
 
+    # Populate the leaderboard_text list with player scores from scores_got
     for i in range(len(scores_got)):
+        # Calculate the maximum text length for proper alignment
         text_length = max(len(f"{scores_got[i][0]}, {scores_got[i][1]}") for i in range(len(scores_got)))
         leaderboard_text.append(
             Text(
-                f"{scores_got[i][0]}, {scores_got[i][1]}",
-                sh // 25,
-                (255, 255, 255),
-                int(sw_m_half + (sw - (text_length * sw // 45))),
-                sh // 25,
-                center=False
-                )
+                f"{scores_got[i][0]}, {scores_got[i][1]}",  # Format: "PlayerName, Score"
+                sh // 25,  # Font size relative to screen height
+                (255, 255, 255),  # White color for text
+                int(sw_m_half + (sw - (text_length * sw // 45))),  # Align text based on max text length
+                sh // 25,  # Y-coordinate for the first entry
+                center=False  # Align text to the left
             )
+        )
+
+    # If no scores are available, display a placeholder message
     if len(scores_got) == 0:
-        text_length = 14
+        text_length = 14  # Length of the placeholder text
         leaderboard_text.append(
             Text(
-                "NO PLAYER, NAN",
-                sh // 25,
-                (255, 255, 255),
-                int(sw_m_half + (sw - (text_length * sw // 45))),
-                sh // 25,
-                center=False
-                )
+                "NO PLAYER, NAN",  # Placeholder text
+                sh // 25,  # Font size relative to screen height
+                (255, 255, 255),  # White color for text
+                int(sw_m_half + (sw - (text_length * sw // 45))),  # Align placeholder text
+                sh // 25,  # Y-coordinate for the placeholder
+                center=False  # Align text to the left
             )
+        )
     
     # Define the clipping box
     clipping_box = pygame.Rect(leaderboard_text[0].x, sh // 30, text_length * sw // 45, sh // 5)  # Example box dimensions
@@ -437,78 +435,90 @@ def pong_loop(username, screen, clock):
         # Draw Background
         screen.fill((20, 20, 25))  # Background color
 
-        if scene == "pong":
-            # Draw Everything
+        # Draw Everything
 
-            # Draw the dotted line in the middle
-            line_color = (220, 220, 224)  # White color for the line
-            line_width = sh // 150  # Width of each line segment
-            line_height = sh // 30  # Height of each line segment
-            gap = sh // 31  # Gap between line segments
-            for y in range(0, sh, line_height + gap):
-                pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
+        # Draw the dotted line in the middle
+        line_color = (220, 220, 224)  # White color for the line
+        line_width = sh // 150  # Width of each line segment
+        line_height = sh // 30  # Height of each line segment
+        gap = sh // 31  # Gap between line segments
+        for y in range(0, sh, line_height + gap):
+            pygame.draw.rect(screen, line_color, (sw_m_half + (sw // 2) - (line_width // 2), y, line_width, line_height))
 
-            # Draw the Scoreboard
-            score_player_text.update(str(score_player))
-            score_player_text.draw(screen)
-            score_AI_text.update(str(score_ai))
-            score_AI_text.draw(screen)
+        # Draw the Scoreboard
+        score_player_text.update(str(score_player))
+        score_player_text.draw(screen)
+        score_AI_text.update(str(score_ai))
+        score_AI_text.draw(screen)
 
-            if not paused_pong:
-                if score_ai >= 1:
-                    end_game = True
-                    reset_game = True
-                    cooldown_timer = 5
-                    win_lose.update("Loser")
+        if not paused_pong:
+            if score_ai >= 7:
+                end_game = True
+                reset_game = True
+                cooldown_timer = 5
+                win_lose.update("Loser")
 
-                
-                elif score_player >= 1:
-                    end_game = True
-                    reset_game = True
-                    cooldown_timer = 5
-                    score = int(score) + 1
-                    win_lose.update("Winner")
+            
+            elif score_player >= 7:
+                end_game = True
+                reset_game = True
+                cooldown_timer = 5
+                score = int(score) + 1
+                win_lose.update("Winner")
 
-            # Draw paddles and ball
-            ball.draw(screen)
-            paddle_player.draw(screen, dt)
-            paddle_ai.draw(screen, dt)
+        # Draw paddles and ball
+        ball.draw(screen)
+        paddle_player.draw(screen, dt)
+        paddle_ai.draw(screen, dt)
 
-            # Draw the Countdown
-            if cooldown:
-                countdown_text.draw(screen)
-            if end_game:
-                win_lose.draw(screen)
-            if start_game:
-                pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
-                screen.blit(surface_transparent, (0,0))
-                start_text.draw(screen)
+        # Draw the Countdown if in cooldown phase
+        if cooldown:
+            countdown_text.draw(screen)
 
-                last_item_y = leaderboard_text[0].y + (sh // 25) * len(leaderboard_text)
+        # Display win/lose message at the end of the game
+        if end_game:
+            win_lose.draw(screen)
 
-                # Draw leaderboard text within the clipping box
-                for i, name in enumerate(leaderboard_text):
-                    if name.text.split(", ")[0] == username:
-                        name.update(f"{username}, {score}", sh // 25)
-                    if leaderboard_text[0].y > sh // 25:
-                        leaderboard_text[0].y += (sh // 25 - leaderboard_text[0].y) * 0.05
+        # Handle the start game screen
+        if start_game:
+            # Draw a semi-transparent overlay
+            pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
+            screen.blit(surface_transparent, (0, 0))
 
-                    elif last_item_y < clipping_box.y + clipping_box.height:
-                        leaderboard_text[0].y += (clipping_box.y + clipping_box.height - last_item_y) * 0.003
-                    text_surface = name.font.render(name.text, True, name.color)
-                    text_rect = text_surface.get_rect(topleft=(leaderboard_text[0].x, leaderboard_text[0].y + i * (sh // 25)))
+            # Draw the start game text
+            start_text.draw(screen)
 
-                    # Check if the text intersects with the clipping box
-                    if clipping_box.colliderect(text_rect):
-                        # Adjust the text position relative to the clipping surface
-                        adjusted_x = text_rect.x - clipping_box.x
-                        adjusted_y = text_rect.y - clipping_box.y
-                        clipping_surface.blit(text_surface, (adjusted_x, adjusted_y))
-                
-                # Draw the scroll text
-                scroll_text.draw(screen)
+            # Calculate the y-coordinate of the last leaderboard item
+            last_item_y = leaderboard_text[0].y + (sh // 25) * len(leaderboard_text)
 
-                exit_button.draw(screen,dt)
+            # Draw leaderboard text within the clipping box
+            for i, name in enumerate(leaderboard_text):
+                # Update the leaderboard entry for the current user
+                if name.text.split(", ")[0] == username:
+                    name.update(f"{username}, {score}", sh // 25)
+
+                # Adjust leaderboard scrolling boundaries
+                if leaderboard_text[0].y > sh // 25:
+                    leaderboard_text[0].y += (sh // 25 - leaderboard_text[0].y) * 0.05
+                elif last_item_y < clipping_box.y + clipping_box.height:
+                    leaderboard_text[0].y += (clipping_box.y + clipping_box.height - last_item_y) * 0.003
+
+                # Render the leaderboard text
+                text_surface = name.font.render(name.text, True, name.color)
+                text_rect = text_surface.get_rect(topleft=(leaderboard_text[0].x, leaderboard_text[0].y + i * (sh // 25)))
+
+                # Check if the text intersects with the clipping box
+                if clipping_box.colliderect(text_rect):
+                    # Adjust the text position relative to the clipping surface
+                    adjusted_x = text_rect.x - clipping_box.x
+                    adjusted_y = text_rect.y - clipping_box.y
+                    clipping_surface.blit(text_surface, (adjusted_x, adjusted_y))
+
+            # Draw the scroll instruction text
+            scroll_text.draw(screen)
+
+            # Draw the exit button
+            exit_button.draw(screen, dt)
 
         # Draw black rectangles on the left and right sides of the screen
         pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
@@ -519,7 +529,7 @@ def pong_loop(username, screen, clock):
     pygame.quit()
     return score
 
-"""
+""""""
 sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
 sw_m = pygame.display.Info().current_w  # Screen dimensions
 #sh = 1375
@@ -528,4 +538,4 @@ sw_m = pygame.display.Info().current_w  # Screen dimensions
 screen = pygame.display.set_mode((sw_m, sh))
 clock = pygame.time.Clock()
 
-print(pong_loop("samuel", screen, clock))"""
+print(pong_loop("samuel", screen, clock))
