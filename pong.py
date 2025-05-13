@@ -12,6 +12,8 @@ import math
 # - Add player easiness (paddle collision size slightly bigger than paddle size)
 # - Fix bug where ball bounces constantly against paddle
 # - Fix Veriticall line Bug!!! ITS STILL THERE AHFDHGFDGFDGS - IMPORTANT
+# - Split into functions: Game Initialization, Event Handling, Game Logic, Drawing, Cooldown Logic, Main Game Loop
+# - Check to see if new player can register scores??!!?? IMPORTANT
 
 # Initialize Pygame
 pygame.init()
@@ -529,7 +531,7 @@ def pong_loop(username, screen, clock):
     pygame.quit()
     return score
 
-""""""
+"""
 sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
 sw_m = pygame.display.Info().current_w  # Screen dimensions
 #sh = 1375
@@ -538,4 +540,4 @@ sw_m = pygame.display.Info().current_w  # Screen dimensions
 screen = pygame.display.set_mode((sw_m, sh))
 clock = pygame.time.Clock()
 
-print(pong_loop("samuel", screen, clock))
+print(pong_loop("samuel", screen, clock))"""
