@@ -1,5 +1,6 @@
 # Gabriel Crozier - Pong Game
 from classes import Button
+from leaderboard import get_leaderboard, get_score
 
 import pygame
 import random
@@ -39,6 +40,8 @@ class Text:
         text_rect = rendered_text.get_rect()
         if self.center:
             text_rect.center = (self.x, self.y)
+        elif self.center == "Right":
+            text_rect.topright = (self.x, self.y)
         else:
             text_rect.topleft = (self.x, self.y)
 
@@ -141,9 +144,6 @@ class Circle:
             if (self.x + self.radius > paddle.x and self.x - self.radius < paddle.x + paddle.width) and \
                (self.y + self.radius > paddle.y - abs(paddle.speed) * 15 and self.y - self.radius < paddle.y + paddle.height + abs(paddle.speed) * 15):
                 self.collision_timer = 10
-                #print(f"START direct: {round(self.direction, 1):<6}, self x: {round(self.x):<3}, self y: {round(self.y):<3}, "
-                #      f"paddle x: {paddle.x:<3}, paddle y: {round(paddle.y):<5}, paddle speed: {round(paddle.speed, 2):<2}")
-
                 # Adjust ball speed based on paddle movement
                 paddle_speed_influence = paddle.speed * 14
                 self.speed += abs(paddle.speed) * 0.05
@@ -168,8 +168,6 @@ class Circle:
                 
                 if normalized_direction > 180:
                     normalized_direction -= 360  # Normalize to range -180 to 180
-                print(f"START  norm direction {normalized_direction}")
-                print(f"START direction {self.direction}")
                 if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
                     if normalized_direction > 0:
                         self.direction -= 15
@@ -180,7 +178,6 @@ class Circle:
                         self.direction -= 15
                     else:
                         self.direction += 15
-                print(f"END direction {self.direction}\n")
 
                 # Adjust ball position to avoid overlapping with paddle
                 if paddle == paddle_player:
@@ -245,66 +242,12 @@ class Paddle:
                 self.y = self.scrn_hei - self.height - self.scrn_mar / 2.5
                 self.speed = 0
 
-def leaderboard(screen): # SAMUALS CODE NEED TO GET BETTER ADAPTED TO MINE
-    #going to leaderboard loop
-    while run:
-        #clear screen
-        screen.fill((255,255,255))
-
-        #score surfaces
-        scoresurfaces = []
-
-        #show leaderboard!
-        pong_leader = "----------TOP 10 CPM SCORES----------"
-        
-        #surfaces
-        title_surface = font.render(pong_leader, True, (0,0,0))
-
-        num = 1
-
-        for score in cpmleaderboard:
-            scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
-            num += 1
-
-
-        for event in pygame.event.get():
-            #checing if the user clicked the X button
-            if event.type == pygame.QUIT:
-                run = False
-            #checking events of buttons
-            for button in cpm_buttons:
-                returnvalue = button.is_clicked()
-                if returnvalue:
-                    if button == go_back_to_main_screen:
-                        return
-                    if button == play_again:
-                        cpm(username)
-                        return
-
-        #variable for showing first score
-        position = (1000, 500)
-
-        #surface showing
-        screen.blit(title_surface, (1000, 470))
-        for surface in scoresurfaces:
-            screen.blit(surface, position)
-            position = (1000, position[1] + 30)
-
-        for button in cpm_buttons:
-            button.draw(screen)
-
-        #updating displays
-        pygame.display.flip()
-
-        #setting frame_rate
-        clock.tick(60)
-
 
 def pong_loop(username, screen, clock):
-    #sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
-    #sw_m = pygame.display.Info().current_w  # Screen dimensions
-    sh = 1375
-    sw_m = 2560
+    sh = pygame.display.Info().current_h  # 30, 50 = taskbar & title bar height Screen dimensions
+    sw_m = pygame.display.Info().current_w  # Screen dimensions
+    #sh = 1375
+    #sw_m = 2560
 
     sw = int(sh*(4/3)) # Aspect sw
     sw_m_half = (sw_m -sw) // 2
@@ -345,7 +288,7 @@ def pong_loop(username, screen, clock):
 
     score_player = 0
     score_ai = 0
-    score = 0
+    score = get_score(username, 4)
 
     end_game = False
 
@@ -353,8 +296,45 @@ def pong_loop(username, screen, clock):
     surface_transparent = pygame.Surface((sw_m,sh), pygame.SRCALPHA)
 
     # Leaderboard
-    leaderboard_button = Button_Better(screen.get_width() / 2 - 200, 800, 300, 100, "Leaderboard", "White", 30, (30,30,35), (50,50,57), 5, 15, True)
+
+    scores_got = get_leaderboard(4)
+    leaderboard_text = []
+
     
+
+    for i in range(len(scores_got)):
+        text_length = max(len(f"{scores_got[i][0]}, {scores_got[i][1]}") for i in range(len(scores_got)))
+        leaderboard_text.append(
+            Text(
+                f"{scores_got[i][0]}, {scores_got[i][1]}",
+                sh // 25,
+                (255, 255, 255),
+                int(sw_m_half + (sw - (text_length * sw // 45))),
+                sh // 25,
+                center=False
+                )
+            )
+    if len(scores_got) == 0:
+        text_length = 14
+        leaderboard_text.append(
+            Text(
+                "NO PLAYER, NAN",
+                sh // 25,
+                (255, 255, 255),
+                int(sw_m_half + (sw - (text_length * sw // 45))),
+                sh // 25,
+                center=False
+                )
+            )
+    
+    # Define the clipping box
+    clipping_box = pygame.Rect(leaderboard_text[0].x, sh // 30, text_length * sw // 45, sh // 5)  # Example box dimensions
+
+    # Create a subsurface for the clipping area
+    clipping_surface = screen.subsurface(clipping_box)
+
+    scroll_text = Text("Scroll through leaderboard", sh // 60, (155, 155, 155), clipping_box.x + clipping_box.width - sh // 5,
+                        clipping_box.y + clipping_box.height + sh // 60, center="Right")
 
     while running:
         dt = clock.tick(240)  # Limit frame rate to 240 FPS
@@ -388,7 +368,6 @@ def pong_loop(username, screen, clock):
                     start_game = True
                     score_ai = 0
                     score_player = 0
-                    score = 0
                     cooldown_timer = 3
                     win_lose.update(" ")
                     end_game = False
@@ -398,14 +377,22 @@ def pong_loop(username, screen, clock):
             if event.type == pygame.QUIT:
                 running = False
                 break
-            if start_game:
-                if event.type in [pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN]:
+
+            elif start_game:
+                if clipping_box.collidepoint(pygame.mouse.get_pos()):
+                    if event.type == pygame.MOUSEWHEEL:
+                        for name in leaderboard_text:
+                                leaderboard_text[0].y += 1.5 * event.y
+                                
+                elif event.type in [pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN]:
                     if exit_button.is_clicked():
-                        running = False
-                        break
-                    start_game = False
-                    cooldown = True
-                    cooldown_start_time = pygame.time.get_ticks()
+                            running = False
+                            break
+                    if event.button == 1:
+                        start_game = False
+                        cooldown = True
+                        cooldown_start_time = pygame.time.get_ticks()
+
             if not paused_pong:
                 if event.type == pygame.KEYDOWN:
                     # Handle player movement keys
@@ -472,7 +459,6 @@ def pong_loop(username, screen, clock):
                     end_game = True
                     reset_game = True
                     cooldown_timer = 5
-                    score = 0
                     win_lose.update("Loser")
 
                 
@@ -480,7 +466,7 @@ def pong_loop(username, screen, clock):
                     end_game = True
                     reset_game = True
                     cooldown_timer = 5
-                    score = 1
+                    score = int(score) + 1
                     win_lose.update("Winner")
 
             # Draw paddles and ball
@@ -497,10 +483,32 @@ def pong_loop(username, screen, clock):
                 pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
                 screen.blit(surface_transparent, (0,0))
                 start_text.draw(screen)
+
+                last_item_y = leaderboard_text[0].y + (sh // 25) * len(leaderboard_text)
+
+                # Draw leaderboard text within the clipping box
+                for i, name in enumerate(leaderboard_text):
+                    if name.text.split(", ")[0] == username:
+                        name.update(f"{username}, {score}", sh // 25)
+                    if leaderboard_text[0].y > sh // 25:
+                        leaderboard_text[0].y += (sh // 25 - leaderboard_text[0].y) * 0.05
+
+                    elif last_item_y < clipping_box.y + clipping_box.height:
+                        leaderboard_text[0].y += (clipping_box.y + clipping_box.height - last_item_y) * 0.003
+                    text_surface = name.font.render(name.text, True, name.color)
+                    text_rect = text_surface.get_rect(topleft=(leaderboard_text[0].x, leaderboard_text[0].y + i * (sh // 25)))
+
+                    # Check if the text intersects with the clipping box
+                    if clipping_box.colliderect(text_rect):
+                        # Adjust the text position relative to the clipping surface
+                        adjusted_x = text_rect.x - clipping_box.x
+                        adjusted_y = text_rect.y - clipping_box.y
+                        clipping_surface.blit(text_surface, (adjusted_x, adjusted_y))
+                
+                # Draw the scroll text
+                scroll_text.draw(screen)
+
                 exit_button.draw(screen,dt)
-        
-        elif scene == "leaderboard":
-            leaderboard_button.draw(screen)
 
         # Draw black rectangles on the left and right sides of the screen
         pygame.draw.rect(screen, (12, 12, 15), (0, 0, sw_m_half, sh))  # Left side
@@ -512,7 +520,12 @@ def pong_loop(username, screen, clock):
     return score
 
 """
-screen = pygame.display.set_mode((2560, 1375))
+sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
+sw_m = pygame.display.Info().current_w  # Screen dimensions
+#sh = 1375
+#sw_m = 2560
+
+screen = pygame.display.set_mode((sw_m, sh))
 clock = pygame.time.Clock()
 
-pong_loop("John", screen, clock)"""
+print(pong_loop("samuel", screen, clock))"""
