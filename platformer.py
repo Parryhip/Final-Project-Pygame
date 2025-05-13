@@ -11,8 +11,8 @@ pygame.init()
 font = pygame.font.Font(None, 36)
 
 # Game window
-W = 800
-H = 600
+W = 2560
+H = 1375
 win = pygame.display.set_mode((W, H))
 pygame.display.set_caption("Platformer")
 
@@ -27,7 +27,7 @@ Yellow = (255, 255, 0)
 # Player info
 player = {
     "x": 50,
-    "y": H - 50,
+    "y": H - 1000,
     "w": 30,
     "h": 30,
     "speed": 5,
@@ -87,7 +87,7 @@ def save_best(score):
     try:
         # Read all data
         rows = []
-        with open("game_scores.csv", "r") as f:
+        with open("high_scores.csv", "r") as f:
             r = csv.reader(f)
             rows = list(r)
         
@@ -97,7 +97,7 @@ def save_best(score):
                 rows[1][1] = str(score)  # Only update platformer score
         
         # Write back all data
-        with open("game_scores.csv", "w", newline="") as f:
+        with open("high_scores.csv", "w", newline="") as f:
             w = csv.writer(f)
             w.writerows(rows)  # Write all rows back
         
