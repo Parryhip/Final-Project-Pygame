@@ -461,7 +461,7 @@ def pong_loop(username, screen, clock):
                 win_lose.update("Loser")
 
             
-            elif score_player >= 1:
+            elif score_player >= 7:
                 end_game = True
                 reset_game = True
                 cooldown_timer = 5
