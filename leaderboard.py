@@ -15,8 +15,9 @@ def input_score(username, position, score):
 
         #finds the line with the username in it
         for line in csvreader:
-            if username == line[0]:
-                previousline = line
+            if len(line) != 0:
+                if username == line[0]:
+                    previousline = line
 
         #lines to rewrite
         lines = []
@@ -67,8 +68,9 @@ def get_score(username, position):
 
         #iterates over the file to find the username line and get the target score at the postion
         for line in csvreader:
-            if line[0] == username:
-                targetscore = line[position]
+            if len(line) != 0:
+                if line[0] == username:
+                    targetscore = line[position]
 
         #returns target score
         return targetscore
@@ -87,7 +89,8 @@ def get_leaderboard(position):
 
         #iterates over file to get the scores for the leaderboard
         for line in csvreader:
-            scores.append((line[0], line[position]))
+            if len(line) != 0:
+                scores.append((line[0], line[position]))
 
         #if the game is the reaction speed game, the lowest score is the best (the lowest time that they reacted)
         if position == 5: 
@@ -101,6 +104,6 @@ def get_leaderboard(position):
     
 #function to input a new user
 def new_user(username):
-    with open("high_scores.csv", "a") as file:
+    with open("high_scores.csv", "a", newline="") as file:
         file.write("\n")
         file.write(f"{username},0,0,0,0,0")
