@@ -511,8 +511,8 @@ def pong_loop(username, screen, clock):
     pygame.quit()
     return score
 
-""""""
+"""
 screen = pygame.display.set_mode((2560, 1375))
 clock = pygame.time.Clock()
 
-pong_loop("John", screen, clock)
+pong_loop("John", screen, clock)"""
