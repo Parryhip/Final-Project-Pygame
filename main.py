@@ -24,47 +24,47 @@ pong_button = Button(screen.get_width() / 2 - 700, 900, 300, 100, "Pong", "Yello
 platformer_button = Button(screen.get_width() / 2 - 700, 700, 300, 100, "Platformer", "Green", "White")
 reaction_speed_button = Button(screen.get_width() / 2 + 300, 700, 300, 100, "Reaction Speed Test", "Red", "White")
 
+def game_selection(username, screen, clock):
+    game_selection_running = True
+    while game_selection_running:
+        screen.blit(game_selection_title_surface, (screen.get_width() / 2 - 250, 500))
+        back_button.draw(screen)
+        if back_button.is_clicked():
+            time.sleep(0.2)
+            return
+        click_per_minute_button.draw(screen)
+        if click_per_minute_button.is_clicked():
+            cpm(username, screen, clock)
+        pong_button.draw(screen)
+        if pong_button.is_clicked():
+            pong_loop(username, screen, clock)
+        platformer_button.draw(screen)
+        if platformer_button.is_clicked():
+            pass
+        reaction_speed_button.draw(screen)
+        if reaction_speed_button.is_clicked():
+            pass
+        tic_tac_button.draw(screen)
+        if tic_tac_button.is_clicked():
+            tic_tac_toe(username, screen, clock)
+            screen.fill("black")
 
 def main():
     username = sign_in_main()
-    start_button_pressed = False
-    running = True
-    while running:
+    title_running = True
+    while title_running:
         screen.fill("black")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        if start_button_pressed == False:
-            screen.blit(main_title_surface, (screen.get_width() / 2 - 275, 500))
-            start_button.draw(screen)
-            exit_button.draw(screen)
-            if start_button.is_clicked():
-                start_button_pressed = True
-                time.sleep(0.2)
-            if exit_button.is_clicked():
-                running = False
-        else:
-            screen.blit(game_selection_title_surface, (screen.get_width() / 2 - 250, 500))
-            back_button.draw(screen)
-            if back_button.is_clicked():
-                start_button_pressed = False
-                time.sleep(0.2)
-            click_per_minute_button.draw(screen)
-            if click_per_minute_button.is_clicked():
-                cpm(username, screen, clock)
-            pong_button.draw(screen)
-            if pong_button.is_clicked():
-                pong_loop(username, screen, clock)
-            platformer_button.draw(screen)
-            if platformer_button.is_clicked():
-                pass
-            reaction_speed_button.draw(screen)
-            if reaction_speed_button.is_clicked():
-                pass
-            tic_tac_button.draw(screen)
-            if tic_tac_button.is_clicked():
-                tic_tac_toe(username, screen, clock)
-                screen.fill("black")
+        screen.blit(main_title_surface, (screen.get_width() / 2 - 275, 500))
+        start_button.draw(screen)
+        exit_button.draw(screen)
+        if start_button.is_clicked():
+            time.sleep(0.2)
+            game_selection(username, screen, clock)
+        if exit_button.is_clicked():
+            running = False
         pygame.display.flip()
         clock.tick(60)
     pygame.quit()
