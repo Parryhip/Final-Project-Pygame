@@ -32,6 +32,7 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
     run = True
     tic_tac_leaderboard = get_leaderboard(2)
     font = pygame.font.SysFont(None, 24)
+    win_text = font.render('You Won!', True, 'Black')
     if someone_has_won == "Player":
             #going to leaderboard loop
         while run:
@@ -61,6 +62,9 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
 
             #variable for showing first score
             position = (1000, 500)
+
+            #Showing the player they won
+            screen.blit(win_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 400))
 
             #surface showing
             tic_screen.blit(title_surface, (1000, 470))
@@ -114,11 +118,13 @@ def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, t
     elif tic_3 == False and tic_3_pl == False and tic_5 == False and tic_5_pl == False and tic_7 == False and tic_7_pl == False:
         return "Computer"
     elif tic_1 == False and tic_2 == False and tic_3 == False and tic_4 == False and tic_5 == False and tic_6 == False and tic_7 == False and tic_9 == False:
-        return "Computer"
+        return "None"
 
 def tic_tac_toe(username, screen, clock):
     font = pygame.font.SysFont(None, 24)
     again_text = font.render('Play Again?', True, "white")
+    lose_text = font.render('You Lost', True, "White")
+    tie_text = font.render('You Tied', True, 'White')
     running = True
     tic_1_active = True
     tic_2_active = True
@@ -148,6 +154,39 @@ def tic_tac_toe(username, screen, clock):
         elif someone_has_won == "Computer":
             screen.fill("black")
             screen.blit(again_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+            screen.blit(lose_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
+            player_turn = False
+            computer_has_done_turn = True
+            yes_button.draw(screen)
+            if yes_button.is_clicked():
+                player_turn = True
+                computer_has_done_turn = False
+                someone_has_won = "None"
+                tic_1_active = True
+                tic_2_active = True
+                tic_3_active = True
+                tic_4_active = True
+                tic_5_active = True
+                tic_6_active = True
+                tic_7_active = True
+                tic_8_active = True
+                tic_9_active = True
+                tic_1_pl_pressed = False
+                tic_2_pl_pressed = False
+                tic_3_pl_pressed = False
+                tic_4_pl_pressed = False
+                tic_5_pl_pressed = False
+                tic_6_pl_pressed = False
+                tic_7_pl_pressed = False
+                tic_8_pl_pressed = False
+                tic_9_pl_pressed = False
+            no_button.draw(screen)
+            if no_button.is_clicked():
+                running = False
+        elif someone_has_won == "None":
+            screen.fill("black")
+            screen.blit(again_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+            screen.blit(tie_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
             player_turn = False
             computer_has_done_turn = True
             yes_button.draw(screen)
