@@ -42,13 +42,18 @@ This project provides entertainment through a more advanced interface using pyga
 + Gabe --> made the pong game
 + Max --> made the tic tac toe game and the main function
 + Aaron --> made platformer game
++ Aaron's Dad's Friend --> jumping and landing on boxes in the platformer game
 + Git Copilot --> helped Gabe learn pygame and base setup features on
 + ChatGPT --> helped Samuel debug code
 + Google Gemini --> helped with the pycache errors in github merging   
 
 ## Author's Info
 ---
-My name is Samuel Andelin, I am in a programming class where I get to code stuff, which is pretty fun. I like to play videogames and like to code as well. I mostly code in Python, but I have coded in some Rust. I definitely prefer python because it is a lot less hassle to be secure, but that is probably more important than it being easy.  
+Samuel --> My name is Samuel Andelin, I am in a programming class where I get to code stuff, which is pretty fun. I like to play videogames and like to code as well. I mostly code in Python, but I have coded in some Rust. I definitely prefer python because it is a lot less hassle to be secure, but that is probably more important than it being easy.
+
+Max --> 
+Aaron -->
+Gabe -->   
 
 ## Change log
 ---
