@@ -58,15 +58,15 @@ state = {
 # Get best score from file
 def get_best():
     try:
-        if not os.path.exists("game_scores.csv"):
+        if not os.path.exists("s\game_scores.csv"):
             # Create new file with headers
-            with open("game_scores.csv", "w", newline="") as f:
+            with open("s\game_scores.csv", "w", newline="") as f:
                 w = csv.writer(f)
                 w.writerow(["username", "platformer"])
             return 0
 
         # Read scores
-        with open("game_scores.csv", "r") as f:
+        with open("s\game_scores.csv", "r") as f:
             r = csv.reader(f)
             next(r)  # Skip header
             scores = []
@@ -87,17 +87,17 @@ def save_best(score):
     try:
         # Read all data
         rows = []
-        with open("game_scores.csv", "r") as f:
+        with open("s\game_scores.csv", "r") as f:
             r = csv.reader(f)
             rows = list(r)
         
         # Update score
         if len(rows) > 1:  # If file has data
             if int(rows[1][1]) < score:  # Update score if new score is higher
-                rows[1][1] = str(score)  # Only update platformer score
+                rows[1][1] = str(score) 
         
         # Write back all data
-        with open("game_scores.csv", "w", newline="") as f:
+        with open("s\game_scores.csv", "w", newline="") as f:
             w = csv.writer(f)
             w.writerows(rows)  # Write all rows back
         
@@ -272,11 +272,12 @@ def game_over():
     if player["score"] > state["best"]:
         save_best(player["score"])
     
+    win.fill(Black)
     font = pygame.font.Font(None, 72)
-    text = font.render(f"Game Over, your score: {player['score']}", True, Red)
-   
-
-
+    text = font.render("Game Over", True, Red)
+    win.blit(text, (W//2 - text.get_width()//2, H//2 - text.get_height()//2))
+    pygame.display.update()
+    time.sleep(3)
 
 def main():
     # Get best score
@@ -289,6 +290,10 @@ def main():
     # Start game
     clock = pygame.time.Clock()
     while state["run"]:
+        if player["life"] <= 0:
+            game_over()
+            state["run"] = False
+
         # Control speed
         clock.tick(60)
         
@@ -325,8 +330,7 @@ def main():
         draw()
         
         # Check game over
-        if player["life"] <= 0:
-            game_over()
+
 
 if __name__ == "__main__":
     main()
