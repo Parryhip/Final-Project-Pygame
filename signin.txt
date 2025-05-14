@@ -1,3 +1,5 @@
 username,hashedpassword
 samuel,$2b$12$TEGXXr5jDz/lzExYYnjAw.6d6.xL8UqVjaJuL8NWhKRJFVR7hYIbu
 s,$2b$12$QA/zjOjDddEI7O92LR3dO.G3s9MzHqzhTEXPd8rDZOPeMBU2zVSNi
+t,$2b$12$aIObgStH0FiuEJfCMUrYjeehwRBLUkc5co7qi8TrWQpG9wrGECDdC
+h,$2b$12$SgLlddD9B2SBPFCMh2PWeOo2v75JG4EU28ZsncXIhj785NTwVFZsq
