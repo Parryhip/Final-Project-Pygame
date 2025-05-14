@@ -279,7 +279,7 @@ def game_over():
     pygame.display.update()
     time.sleep(3)
 
-def main():
+def platformer():
     # Get best score
     state["best"] = get_best()
     print(f"Best: {state['best']}")
@@ -330,7 +330,3 @@ def main():
         draw()
         
         # Check game over
-
-
-if __name__ == "__main__":
-    main()

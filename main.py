@@ -6,6 +6,7 @@ from tic_tac_toe import *
 from cpm import *
 from pong import *
 from sign_in import *
+from platformer import *
 
 #Setting up pygame and making all other required fonts, buttons, titles, if statement checkers, etc
 pygame.init()
@@ -81,7 +82,7 @@ def main():
             #Sends you to platformer game if platformer button is clicked
             if platformer_button.is_clicked():
                 platformer_button_clicked = True
-                pass
+                platformer()
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True:
                 pass
             else:
