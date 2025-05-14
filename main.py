@@ -91,15 +91,6 @@ def main():
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True:
                 pass
             else:
-                reaction_speed_button.draw(screen)
-            if reaction_speed_button.is_clicked():
-                reaction_speed_button_clicked = True
-                pass
-            else:
-                reaction_speed_button_clicked = False
-            if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True or reaction_speed_button_clicked == True:
-                pass
-            else:
                 tic_tac_button.draw(screen)
             if tic_tac_button.is_clicked():
                 tic_tac_toe(username, screen, clock)
