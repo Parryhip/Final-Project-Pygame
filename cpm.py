@@ -180,7 +180,7 @@ def cpm(username, screen, clock):
                     if button == go_back_to_main_screen:
                         return
                     if button == play_again:
-                        cpm(username)
+                        cpm(username, screen, clock)
                         return
 
         #variable for showing first score
