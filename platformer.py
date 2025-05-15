@@ -37,7 +37,10 @@ player = {
     "vy": 0,  # vertical velocity
     "gravity": 0.5,  # gravity value
     "max_fall_speed": 10,  # terminal velocity
-    "jump_strength": -20  # negative velocity to jump
+    "jump_strength": -20,  # negative velocity to jump
+    "hit_timer": 0,       # Countdown for red flash
+    "knockback_x": 0,     # How far to knockback horizontally
+    "knockback_y": 0      # Vertical knockback
 }
 
 # Game things
@@ -70,6 +73,36 @@ def save_best(username, score):
     except:
         Instrustion_text8 = font.render(f"Save score failed", True, Yellow)
         win.blit(Instrustion_text8, (10, 160))
+
+
+def show_platformer_leaderboard():
+    leaderboard = get_leaderboard(3)  # platformer is column 4, index 3
+    font = pygame.font.Font(None, 48)
+    small_font = pygame.font.Font(None, 36)
+    
+    while True:
+        win.fill(Black)
+        
+        title_text = font.render("Platformer Leaderboard (Top 10)", True, Yellow)
+        win.blit(title_text, (W // 2 - title_text.get_width() // 2, 100))
+        
+        y_start = 200
+        for i, (name, score) in enumerate(leaderboard):
+            entry_text = small_font.render(f"{i+1}. {name} : {score}", True, White)
+            win.blit(entry_text, (W // 2 - entry_text.get_width() // 2, y_start + i * 40))
+
+        instruction_text = small_font.render("Press Enter to return to Game Selection", True, White)
+        win.blit(instruction_text, (W // 2 - instruction_text.get_width() // 2, H - 100))
+
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
+
 
 def make_level():
     # Clear old things
@@ -122,9 +155,8 @@ def make_level():
 def draw():
     # Draw game
     def draw_player():
-        # Draw player
-        pygame.draw.rect(win, Green, (player["x"], player["y"], 
-                                    player["w"], player["h"]))
+        color = Red if player["hit_timer"] > 0 else Green
+        pygame.draw.rect(win, color, (player["x"], player["y"], player["w"], player["h"]))
     
     # Clear screen
     win.fill(Black)
@@ -216,6 +248,12 @@ def check_hit():
             if box.colliderect(bad):
                 player["life"] -= 1
                 state["safe"] = time.time() + 3
+                player["hit_timer"] = 30
+                if player["x"] < bad.x:
+                    player["knockback_x"] = -10  # push left
+                else:
+                    player["knockback_x"] = 10   # push right
+                player["knockback_y"] = -5  # slight upward bump
                 break
 
 def game_over(username):
@@ -228,6 +266,8 @@ def game_over(username):
     win.blit(text, (W//2 - text.get_width()//2, H//2 - text.get_height()//2))
     pygame.display.update()
     time.sleep(3)
+
+    show_platformer_leaderboard()
 
 def platformer(username):
     # Get best score
@@ -270,10 +310,18 @@ def platformer(username):
             player["vy"] = player["max_fall_speed"]
         player["y"] += player["vy"]
         
+        # Apply knockback if hit
+        if player["hit_timer"] > 0:
+            player["x"] += player["knockback_x"]
+            player["y"] += player["knockback_y"]
+            player["hit_timer"] -= 1
+        else:
+            player["knockback_x"] = 0
+            player["knockback_y"] = 0
+
+
         # Check hits
         check_hit()
         
         # Draw game
         draw()
-
-platformer("test")

@@ -1,1 +1,2 @@
 username,hashedpassword
+s,$2b$12$rkcnHDpAGokKH13uLLzV0.OsjUfxVXmCsWi/cY4nv.oQ..mZsP2nO
