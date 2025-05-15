@@ -76,6 +76,7 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
             
             next_button.draw(tic_screen)
             if next_button.is_clicked():
+                time.sleep(0.2)
                 return
 
             pygame.display.flip()
