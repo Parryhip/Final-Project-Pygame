@@ -51,9 +51,8 @@ This project provides entertainment through a more advanced interface using pyga
 ## Author's Info
 ---
 Samuel --> My name is Samuel Andelin, I am in a programming class where I get to code stuff, which is pretty fun. I like to play videogames and like to code as well. I mostly code in Python, but I have coded in some Rust. I definitely prefer python because it is a lot less hassle to be secure, but that is probably more important than it being easy.
-
-Max --> 
 Aaron --> My name is Aaron Wang, I am in a programming class where I get to learn how to code. I like to play videogames. I code in Python.
+Max --> I am a simple Computer Programming 2 Student (CS1500). I am still learning how to code but I am improving. I hope to improve even more and eventually use this in engineering.
 Gabe --> My name is Gabriel Crozier, I am currently doing a computer science class. I love video games, Minecraft and Roblox being one of the top things I play. I code only in python for now.
 
 ## Change log
