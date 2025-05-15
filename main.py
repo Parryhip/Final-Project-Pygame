@@ -15,7 +15,15 @@ game_selection_title = "Game Selection"
 game_selection_title_surface = font.render(game_selection_title, True, "White")
 main_title = "High Score Tracker"
 main_title_surface = font.render(main_title, True, "White")
-screen = pygame.display.set_mode((2560, 1375))
+
+#Get screen size
+infoObject = pygame.display.Info()
+screen_width = infoObject.current_w
+screen_height = infoObject.current_h
+
+#Set display to full screen or use screen size
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
 clock = pygame.time.Clock()
 start_button = Button(screen.get_width() / 2 - 200, 900, 300, 100, "Start", "Blue", "White")
 exit_button = Button(screen.get_width() / 2 - 200, 1100, 300, 100, "Exit", "Blue", "White")
@@ -27,7 +35,7 @@ platformer_button = Button(screen.get_width() / 2 - 200, 700, 300, 100, "Platfor
 
 def main():
     #Using sign in function to get the user to sign in or create an account
-    username = sign_in_main()
+    username = sign_in_main(screen, clock)
     start_button_pressed = False
     running = True
     #The main game loop

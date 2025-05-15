@@ -6,10 +6,8 @@ from leaderboard import *
 from classes import Button
 import bcrypt
 
-#initializing screen, and pygame
+#initializing pygame
 pygame.init()
-screen = pygame.display.set_mode((2560, 1375))
-screen.fill((255,255,255))
 normal_font = pygame.font.SysFont("Arial", 32)
 
 #Allow holding keys
@@ -66,7 +64,7 @@ def accountinfochecksout(username, password):
         return "no_user"
 
 #signin function
-def signin(go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
+def signin(screen, clock, go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
     username_rect = pygame.Rect(screen.get_width() // 2 - 160, 600, 320, 50)
     password_rect = pygame.Rect(screen.get_width() // 2 - 160, 700, 320, 50)
 
@@ -196,7 +194,7 @@ def signin(go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
         pygame.display.flip()
 
 
-def signup(go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
+def signup(screen, clock, go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
 
     breakout = False
     #text to show where to input stuff
@@ -371,7 +369,7 @@ def signup(go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
 
     with open("signin.txt", "a") as file:
         file.write("\n")
-        file.write(f"{inputtedusername},{encryptedpassword.decode("utf-8")}")
+        file.write(f"{inputtedusername},{encryptedpassword.decode('utf-8')}")
 
     go_back_to_main = Button(500, 500, 300, 200, "Go to Game Selection", "green", "blue")
     while True:
@@ -399,7 +397,7 @@ def signup(go_back=Button(400, 1150, 250, 125, "Go Back", "green", "blue")):
 
 
 #function to sign in
-def sign_in_main():
+def sign_in_main(screen, clock):
     while run:
         #breakout set to false
         breakout = False
@@ -463,14 +461,14 @@ def sign_in_main():
         
 
         if sign_in:
-            username = signin()
+            username = signin(screen, clock)
             if username == False:
                 pass
             else:
                 return username
             
         if sign_up:
-            username = signup()
+            username = signup(screen, clock)
             if username == False:
                 pass
             else:
