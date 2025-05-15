@@ -239,11 +239,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_1_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2)))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 40))
             elif tic_1_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2)))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 30))
             if tic_2_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -255,11 +255,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_2_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 40))
             elif tic_2_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 30))
             if tic_3_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -271,11 +271,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_3_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2)))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 40))
             elif tic_3_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2)))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 30))
             if tic_4_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -287,11 +287,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_4_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 160))
             elif tic_4_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 150))
             if tic_5_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -303,11 +303,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_5_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 160))
             elif tic_5_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 150))
             if tic_6_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -319,11 +319,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_6_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 160))
             elif tic_6_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 120))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 150))
             if tic_7_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -335,11 +335,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_7_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 280))
             elif tic_7_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 220, (screen.get_height() / 2) - 270))
             if tic_8_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -351,11 +351,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_8_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 280))
             elif tic_8_pl_pressed == False:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 270))
             if tic_9_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -367,11 +367,11 @@ def tic_tac_toe(username, screen, clock):
             elif tic_9_pl_pressed == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_X, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 280))
             else:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
-                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 240))
+                screen.blit(tic_tac_O, ((screen.get_width() / 2) + 20, (screen.get_height() / 2) - 270))
             pygame.display.flip()
             dt = clock.tick(60) / 1000
         elif player_turn == False:
