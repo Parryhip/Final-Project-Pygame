@@ -92,10 +92,20 @@ def main():
                 tic_tac_button.draw(screen)
             if tic_tac_button.is_clicked():
                 tic_tac_toe(username, screen, clock)
+                # Flush event queue
+                pygame.event.clear()
+                
+                # Wait until mouse button is released
+                waiting_for_release = True
+                while waiting_for_release:
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            waiting_for_release = False
+                    clock.tick(60)
                 screen.fill("black")
-            cpm_button_clicked = False
-            pong_button_clicked = False
-            platformer_button_clicked = False
+            #cpm_button_clicked = False
+            #pong_button_clicked = False
+            #platformer_button_clicked = False
         pygame.display.flip()
         clock.tick(60)
     pygame.quit()
