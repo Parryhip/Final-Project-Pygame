@@ -167,7 +167,7 @@ class Circle:
                 normalized_direction = self.direction % 360
                 
                 if normalized_direction > 180:
-                    normalized_direction -= 360  # Normalize to range -180 to 180
+                    normalized_direction -= 180  # Normalize to range -180 to 180
                 if 75 < abs(normalized_direction) < 105:  # Near 90 degrees
                     if normalized_direction > 0:
                         self.direction -= 15
@@ -270,6 +270,7 @@ def pong_loop(username, screen, clock):
     win_lose = Text(" ", int(sh // 4), (255, 255, 255), sw_m_half + sw // 2, int(sh // 1.2), center=True)
 
     start_text = Text("Press Anything to Start Game", sh // 30, (255, 255, 255), sw_m_half + sw // 2, sh // 2, center=True)
+    goal_text = Text("Get to 7 Points to Win", sh // 30, (200, 200, 200), sw_m_half + sw // 2, (sh // 2) + sh // 20, center=True)
     exit_button = Button_Better(sw_m_half + sw // 2, int(sh // 1.15), int((sh // 10)*3.5), sh // 9, "Exit", "White", 50, (30,30,35), (50,50,57), sh // 200, sh // 66, True)
 
     # Starting Variables
@@ -485,11 +486,12 @@ def pong_loop(username, screen, clock):
         # Handle the start game screen
         if start_game:
             # Draw a semi-transparent overlay
-            pygame.draw.rect(surface_transparent, (12, 12, 15, 155), (sw_m_half, 0, sw, sh))
+            pygame.draw.rect(surface_transparent, (12, 12, 15, 180), (sw_m_half, 0, sw, sh))
             screen.blit(surface_transparent, (0, 0))
 
             # Draw the start game text
             start_text.draw(screen)
+            goal_text.draw(screen)
 
             # Calculate the y-coordinate of the last leaderboard item
             last_item_y = leaderboard_text[0].y + (sh // 25) * len(leaderboard_text)
@@ -539,5 +541,6 @@ sw_m = pygame.display.Info().current_w  # Screen dimensions
 
 screen = pygame.display.set_mode((sw_m, sh))
 clock = pygame.time.Clock()
-
-print(pong_loop("samuel", screen, clock))"""
+pong_loop("samuel", screen, clock)
+print(get_score("samuel", 4))
+pygame.quit()"""
