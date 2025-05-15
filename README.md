@@ -54,7 +54,7 @@ Samuel --> My name is Samuel Andelin, I am in a programming class where I get to
 
 Max --> 
 Aaron -->
-Gabe -->   
+Gabe --> My name is Gabriel Crozier, I am currently doing a computer science class. I love video games, Minecraft and Roblox being one of the top things I play. I code only in python for now.
 
 ## Change log
 ---
