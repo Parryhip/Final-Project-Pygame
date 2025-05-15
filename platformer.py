@@ -3,18 +3,16 @@ import csv # Import csv
 import os # import os 
 import time # time
 import random # random
-
-
+from leaderboard import * 
 
 # Start the game
 pygame.init()
 font = pygame.font.Font(None, 36)
 
 # Game window
-W = 800
-H = 600
+W = 2560
+H = 1375
 win = pygame.display.set_mode((W, H))
-pygame.display.set_caption("Platformer")
 
 # Colors
 White = (255, 255, 255)
@@ -36,7 +34,10 @@ player = {
     "score": 0,
     "keys": [],
     "jump_on": False,
-    "jump_num": 15
+    "vy": 0,  # vertical velocity
+    "gravity": 0.5,  # gravity value
+    "max_fall_speed": 10,  # terminal velocity
+    "jump_strength": -10  # negative velocity to jump
 }
 
 # Game things
@@ -56,51 +57,16 @@ state = {
 }
 
 # Get best score from file
-def get_best():
+def get_best(username):
     try:
-        if not os.path.exists("s\game_scores.csv"):
-            # Create new file with headers
-            with open("s\game_scores.csv", "w", newline="") as f:
-                w = csv.writer(f)
-                w.writerow(["username", "platformer"])
-            return 0
-
-        # Read scores
-        with open("s\game_scores.csv", "r") as f:
-            r = csv.reader(f)
-            next(r)  # Skip header
-            scores = []
-            for row in r:
-                if row and len(row) > 1:  # Make sure row has enough speace
-                    try:
-                        scores.append(int(row[3]))  # platformer is 4th column
-                    except:
-                        continue
-            if scores:
-                return max(scores)
-            return 0
+        return int(get_score(username, 3))  # platformer is 4th column (index 3)
     except:
         return 0
 
 # Save best score to file
-def save_best(score):
+def save_best(username, score):
     try:
-        # Read all data
-        rows = []
-        with open("s\game_scores.csv", "r") as f:
-            r = csv.reader(f)
-            rows = list(r)
-        
-        # Update score
-        if len(rows) > 1:  # If file has data
-            if int(rows[1][1]) < score:  # Update score if new score is higher
-                rows[1][1] = str(score) 
-        
-        # Write back all data
-        with open("s\game_scores.csv", "w", newline="") as f:
-            w = csv.writer(f)
-            w.writerows(rows)  # Write all rows back
-        
+        input_score(username, 3, score)  # platformer is 4th column (index 3)
     except:
         Instrustion_text8 = font.render(f"Save score failed", True, Yellow)
         win.blit(Instrustion_text8, (10, 160))
@@ -223,16 +189,12 @@ def check_hit():
     box = pygame.Rect(player["x"], player["y"], 
                      player["w"], player["h"])
     
-    # Make player fall
-    if player["y"] < H - player["h"]:
-        player["y"] += 5
-    
-    # Stop at bottom
+    # Stop at bottom of screen
     if player["y"] > H - player["h"]:
         player["y"] = H - player["h"]
+        player["vy"] = 0
         player["jump_on"] = False
-        player["jump_num"] = 15
-    
+
     # Stop at sides
     if player["x"] < 0:
         player["x"] = 0
@@ -241,13 +203,16 @@ def check_hit():
     
     # Check floors
     for floor in game["floors"]:
-        if (box.bottom >= floor.top and 
-            box.bottom <= floor.top + 10 and
-            box.right >= floor.left and 
-            box.left <= floor.right):
-            player["y"] = floor.top - player["h"]
-            player["jump_on"] = False
-            player["jump_num"] = 15
+        if box.colliderect(floor):
+            # Falling onto floor
+            if player["vy"] > 0 and box.bottom - player["vy"] <= floor.top:
+                player["y"] = floor.top - player["h"]
+                player["vy"] = 0
+                player["jump_on"] = False
+            # Hitting head (optional)
+            elif player["vy"] < 0 and box.top - player["vy"] >= floor.bottom:
+                player["y"] = floor.bottom
+                player["vy"] = 0
     
     # Check keys
     for key in game["keys"][:]:
@@ -268,9 +233,10 @@ def check_hit():
                 player["life"] -= 1
                 state["safe"] = time.time() + 3
                 break
-def game_over():
+
+def game_over(username):
     if player["score"] > state["best"]:
-        save_best(player["score"])
+        save_best(username, player["score"])
     
     win.fill(Black)
     font = pygame.font.Font(None, 72)
@@ -279,9 +245,9 @@ def game_over():
     pygame.display.update()
     time.sleep(3)
 
-def main():
+def platformer(username):
     # Get best score
-    state["best"] = get_best()
+    state["best"] = get_best(username)
     print(f"Best: {state['best']}")
     
     # Make first level
@@ -291,7 +257,7 @@ def main():
     clock = pygame.time.Clock()
     while state["run"]:
         if player["life"] <= 0:
-            game_over()
+            game_over(username)
             state["run"] = False
 
         # Control speed
@@ -310,27 +276,18 @@ def main():
             player["x"] += player["speed"]
         
         # Jump
-        if not player["jump_on"]:
-            if keys[pygame.K_SPACE]:
-                player["jump_on"] = True
-                player["y"] -= 15
-        else:
-            if player["jump_num"] >= -15:
-                neg = 1 if player["jump_num"] >= 0 else -1
-                player["y"] -= (player["jump_num"] ** 2) * 0.3 * neg
-                player["jump_num"] -= 1
-            else:
-                player["jump_on"] = False
-                player["jump_num"] = 15
+        if keys[pygame.K_SPACE] and not player["jump_on"]:
+            player["vy"] = player["jump_strength"]
+            player["jump_on"] = True
+        
+        # Apply gravity
+        player["vy"] += player["gravity"]
+        if player["vy"] > player["max_fall_speed"]:
+            player["vy"] = player["max_fall_speed"]
+        player["y"] += player["vy"]
         
         # Check hits
         check_hit()
         
         # Draw game
         draw()
-        
-        # Check game over
-
-
-if __name__ == "__main__":
-    main()

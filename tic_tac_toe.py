@@ -5,6 +5,7 @@ from classes import *
 from leaderboard import *
 import time
 
+#Setting up pygame and making all the variables such as the tic tac toe buttons, lines, X and O, other buttons, etc
 pygame.init()
 screen = pygame.display.set_mode((2560, 1375))
 clock = pygame.time.Clock()
@@ -32,6 +33,7 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
     run = True
     tic_tac_leaderboard = get_leaderboard(2)
     font = pygame.font.SysFont(None, 24)
+    win_text = font.render('You Won!', True, 'Black')
     if someone_has_won == "Player":
             #going to leaderboard loop
         while run:
@@ -44,11 +46,12 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
             #show leaderboard!
             tic_leaderboard_title = "----------TOP 10 TIC TAC SCORES----------"
             
-            #surfaces
+            #Making the title surface
             title_surface = font.render(tic_leaderboard_title, True, (0,0,0))
 
             num = 1
 
+            #Getting the scores and turning them into surfaces
             for score in tic_tac_leaderboard:
                 scoresurfaces.append(font.render(f"{num}. {score[0]}: {score[1]}", True, (0,0,0)))
                 num += 1
@@ -62,6 +65,9 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
             #variable for showing first score
             position = (1000, 500)
 
+            #Showing the player they won
+            screen.blit(win_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 400))
+
             #surface showing
             tic_screen.blit(title_surface, (1000, 470))
             for surface in scoresurfaces:
@@ -72,14 +78,13 @@ def tic_leaderboard(someone_has_won, tic_screen, clock):
             if next_button.is_clicked():
                 return
 
-            #updating displays
             pygame.display.flip()
 
-            #setting frame_rate
             clock.tick(60)
     else:
         return
 
+#This function will check all the tic spaces to see if someone has won in the first if statement its checking the first row for the player
 def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, tic_1_pl, tic_2_pl, tic_3_pl, tic_4_pl, tic_5_pl, tic_6_pl, tic_7_pl, tic_8_pl, tic_9_pl):
     if tic_1 == False and tic_1_pl == True and tic_2 == False and tic_2_pl == True and tic_3 == False and tic_3_pl == True:
         return "Player"
@@ -114,11 +119,15 @@ def win_checker(tic_1, tic_2, tic_3, tic_4, tic_5, tic_6, tic_7, tic_8, tic_9, t
     elif tic_3 == False and tic_3_pl == False and tic_5 == False and tic_5_pl == False and tic_7 == False and tic_7_pl == False:
         return "Computer"
     elif tic_1 == False and tic_2 == False and tic_3 == False and tic_4 == False and tic_5 == False and tic_6 == False and tic_7 == False and tic_9 == False:
-        return "Computer"
+        return "None"
 
+#The "main" function for tic tac toe
 def tic_tac_toe(username, screen, clock):
+    #Setting up all variables needed for the game to run
     font = pygame.font.SysFont(None, 24)
     again_text = font.render('Play Again?', True, "white")
+    lose_text = font.render('You Lost', True, "White")
+    tie_text = font.render('You Tied', True, 'White')
     running = True
     tic_1_active = True
     tic_2_active = True
@@ -140,14 +149,51 @@ def tic_tac_toe(username, screen, clock):
     tic_9_pl_pressed = False
     player_turn = True
     someone_has_won = "None"
-    
+
     while running:
+        #Checking to see if someone has won
         someone_has_won = win_checker(tic_1_active, tic_2_active, tic_3_active, tic_4_active, tic_5_active, tic_6_active, tic_7_active, tic_8_active, tic_9_active, tic_1_pl_pressed, tic_2_pl_pressed, tic_3_pl_pressed, tic_4_pl_pressed, tic_5_pl_pressed, tic_6_pl_pressed, tic_7_pl_pressed, tic_8_pl_pressed, tic_9_pl_pressed)
+        #By breaking the while loop if its player it will send you to the leaderboard
         if someone_has_won == "Player":
             break
+        #This is the play again and you lost screen
         elif someone_has_won == "Computer":
             screen.fill("black")
             screen.blit(again_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+            screen.blit(lose_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
+            player_turn = False
+            computer_has_done_turn = True
+            yes_button.draw(screen)
+            if yes_button.is_clicked():
+                player_turn = True
+                computer_has_done_turn = False
+                someone_has_won = "None"
+                tic_1_active = True
+                tic_2_active = True
+                tic_3_active = True
+                tic_4_active = True
+                tic_5_active = True
+                tic_6_active = True
+                tic_7_active = True
+                tic_8_active = True
+                tic_9_active = True
+                tic_1_pl_pressed = False
+                tic_2_pl_pressed = False
+                tic_3_pl_pressed = False
+                tic_4_pl_pressed = False
+                tic_5_pl_pressed = False
+                tic_6_pl_pressed = False
+                tic_7_pl_pressed = False
+                tic_8_pl_pressed = False
+                tic_9_pl_pressed = False
+            no_button.draw(screen)
+            if no_button.is_clicked():
+                running = False
+        #This is the play again and if the player tied screen
+        elif someone_has_won == "None":
+            screen.fill("black")
+            screen.blit(again_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 120))
+            screen.blit(tie_text, ((screen.get_width() / 2) - 100, (screen.get_height() / 2)))
             player_turn = False
             computer_has_done_turn = True
             yes_button.draw(screen)
@@ -181,6 +227,7 @@ def tic_tac_toe(username, screen, clock):
                 running = False
         if player_turn == True:
             screen.fill("black")
+            #The if statements below are all checking to see if the button should be pressed and / or if its pressed disable it
             if tic_1_active == True:
                 for rect in tic_rect_list:
                     pygame.draw.rect(screen, "White", rect)
@@ -330,6 +377,7 @@ def tic_tac_toe(username, screen, clock):
         elif player_turn == False:
             computer_has_done_turn = False
             while computer_has_done_turn == False:
+                #The if statements are here to make sure the computer does not choose a space already chosen
                 com_num = random.randint(1, 9)
                 if tic_1_active == True or tic_2_active == True or tic_3_active == True or tic_4_active == True or tic_5_active == True or tic_6_active == True or tic_7_active == True or tic_8_active == True or tic_9_active == True:
                     if com_num == 1:
@@ -402,11 +450,13 @@ def tic_tac_toe(username, screen, clock):
         pygame.display.flip()
         clock.tick(60)
     
+    #Add one to the players score if they win
     if someone_has_won == "Player":
         current_score = int(get_score(username, 2))
         new_score = current_score + 1
         input_score(username, 2, new_score)
 
+    #This is part of the break thing above when the player wins
     tic_leaderboard(someone_has_won, screen, clock)
 
     return
