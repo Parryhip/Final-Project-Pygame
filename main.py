@@ -16,13 +16,8 @@ game_selection_title_surface = font.render(game_selection_title, True, "White")
 main_title = "High Score Tracker"
 main_title_surface = font.render(main_title, True, "White")
 
-#Get screen size
-infoObject = pygame.display.Info()
-screen_width = infoObject.current_w
-screen_height = infoObject.current_h
-
-#Set display to full screen or use screen size
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# Set the display mode to full-screen
+screen = pygame.display.set_mode((2560, 1440))
 
 clock = pygame.time.Clock()
 start_button = Button(screen.get_width() / 2 - 200, 900, 300, 100, "Start", "Blue", "White")
