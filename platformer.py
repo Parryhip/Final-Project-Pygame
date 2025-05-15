@@ -5,7 +5,6 @@ import time # time
 import random # random
 from leaderboard import * 
 
-
 # Start the game
 pygame.init()
 font = pygame.font.Font(None, 36)
@@ -14,7 +13,6 @@ font = pygame.font.Font(None, 36)
 W = 2560
 H = 1375
 win = pygame.display.set_mode((W, H))
-pygame.display.set_caption("Platformer")
 
 # Colors
 White = (255, 255, 255)
@@ -36,7 +34,10 @@ player = {
     "score": 0,
     "keys": [],
     "jump_on": False,
-    "jump_num": 15
+    "vy": 0,  # vertical velocity
+    "gravity": 0.5,  # gravity value
+    "max_fall_speed": 10,  # terminal velocity
+    "jump_strength": -10  # negative velocity to jump
 }
 
 # Game things
@@ -188,16 +189,12 @@ def check_hit():
     box = pygame.Rect(player["x"], player["y"], 
                      player["w"], player["h"])
     
-    # Make player fall
-    if player["y"] < H - player["h"]:
-        player["y"] += 5
-    
-    # Stop at bottom
+    # Stop at bottom of screen
     if player["y"] > H - player["h"]:
         player["y"] = H - player["h"]
+        player["vy"] = 0
         player["jump_on"] = False
-        player["jump_num"] = 15
-    
+
     # Stop at sides
     if player["x"] < 0:
         player["x"] = 0
@@ -206,13 +203,16 @@ def check_hit():
     
     # Check floors
     for floor in game["floors"]:
-        if (box.bottom >= floor.top and 
-            box.bottom <= floor.top + 10 and
-            box.right >= floor.left and 
-            box.left <= floor.right):
-            player["y"] = floor.top - player["h"]
-            player["jump_on"] = False
-            player["jump_num"] = 15
+        if box.colliderect(floor):
+            # Falling onto floor
+            if player["vy"] > 0 and box.bottom - player["vy"] <= floor.top:
+                player["y"] = floor.top - player["h"]
+                player["vy"] = 0
+                player["jump_on"] = False
+            # Hitting head (optional)
+            elif player["vy"] < 0 and box.top - player["vy"] >= floor.bottom:
+                player["y"] = floor.bottom
+                player["vy"] = 0
     
     # Check keys
     for key in game["keys"][:]:
@@ -276,23 +276,18 @@ def platformer(username):
             player["x"] += player["speed"]
         
         # Jump
-        if not player["jump_on"]:
-            if keys[pygame.K_SPACE]:
-                player["jump_on"] = True
-                player["y"] -= 15
-        else:
-            if player["jump_num"] >= -15:
-                neg = 1 if player["jump_num"] >= 0 else -1
-                player["y"] -= (player["jump_num"] ** 2) * 0.3 * neg
-                player["jump_num"] -= 1
-            else:
-                player["jump_on"] = False
-                player["jump_num"] = 15
+        if keys[pygame.K_SPACE] and not player["jump_on"]:
+            player["vy"] = player["jump_strength"]
+            player["jump_on"] = True
+        
+        # Apply gravity
+        player["vy"] += player["gravity"]
+        if player["vy"] > player["max_fall_speed"]:
+            player["vy"] = player["max_fall_speed"]
+        player["y"] += player["vy"]
         
         # Check hits
         check_hit()
         
         # Draw game
         draw()
-        
-        # Check game over
