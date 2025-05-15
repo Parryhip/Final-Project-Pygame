@@ -533,7 +533,7 @@ def pong_loop(username, screen, clock):
     
     return
 
-""""""
+"""
 sh = pygame.display.Info().current_h - 50 - 35  # 30, 50 = taskbar & title bar height Screen dimensions
 sw_m = pygame.display.Info().current_w  # Screen dimensions
 #sh = 1375
@@ -543,4 +543,4 @@ screen = pygame.display.set_mode((sw_m, sh))
 clock = pygame.time.Clock()
 pong_loop("samuel", screen, clock)
 print(get_score("samuel", 4))
-pygame.quit()
+pygame.quit()"""
