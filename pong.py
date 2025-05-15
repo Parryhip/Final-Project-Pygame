@@ -260,7 +260,7 @@ def pong_loop(username, screen, clock):
     # Initialize ball and paddles
     ball = Circle(sw_m_half + sw // 2, sh // 2, sh / 45, generic_color, sh)
     paddle_player = Paddle(screen, sw_m_half + 50, sh // 2, paddle_width, paddle_height, generic_color, 0.007, paddle_border)
-    paddle_ai = Paddle(screen, sw_m_half + sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.006, paddle_border)
+    paddle_ai = Paddle(screen, sw_m_half + sw - 50, sh // 2, paddle_width, paddle_height, generic_color, 0.0055, paddle_border)
 
     # Initialize text
     countdown_text = Text("3", int(sh / 7.5), (255, 255, 255), sw_m_half + sw // 2, sh // 1.5, center=True)
