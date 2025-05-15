@@ -255,8 +255,8 @@ def check_hit():
                     player["knockback_x"] = 10   # push right
                 player["knockback_y"] = -5  # slight upward bump
                 break
-
 def game_over(username):
+    # If the player score is greater than the best score, save it
     if player["score"] > state["best"]:
         save_best(username, player["score"])
     
@@ -267,39 +267,48 @@ def game_over(username):
     pygame.display.update()
     time.sleep(3)
 
+    # Show the leaderboard after the game over screen
     show_platformer_leaderboard()
 
+    # After leaderboard screen, set game state to False to stop the loop
+    state["run"] = False
+
+
 def platformer(username):
-    # Get best score
+    # Get the best score for the player
     state["best"] = get_best(username)
     print(f"Best: {state['best']}")
     
-    # Make first level
+    # Make the first level
     make_level()
     
-    # Start game
+    # Start game clock
     clock = pygame.time.Clock()
+    
+    # Start the game loop
     while state["run"]:
         if player["life"] <= 0:
+            # Handle game over if the player runs out of lives
             game_over(username)
-            state["run"] = False
+            break  # End the loop after showing game over
 
-        # Control speed
+        # Control game speed
         clock.tick(60)
         
-        # Check quit
+        # Check for quit events (e.g., player clicking the X button)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state["run"] = False
+                break  # Break out of the loop when quitting
         
-        # Move left and right
+        # Handle player movement (left and right)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player["x"] > 0:
             player["x"] -= player["speed"]
         if keys[pygame.K_RIGHT] and player["x"] < W - player["w"]:
             player["x"] += player["speed"]
         
-        # Jump
+        # Handle jumping
         if keys[pygame.K_SPACE] and not player["jump_on"]:
             player["vy"] = player["jump_strength"]
             player["jump_on"] = True
@@ -310,7 +319,7 @@ def platformer(username):
             player["vy"] = player["max_fall_speed"]
         player["y"] += player["vy"]
         
-        # Apply knockback if hit
+        # Apply knockback if player was hit
         if player["hit_timer"] > 0:
             player["x"] += player["knockback_x"]
             player["y"] += player["knockback_y"]
@@ -319,9 +328,11 @@ def platformer(username):
             player["knockback_x"] = 0
             player["knockback_y"] = 0
 
-
-        # Check hits
+        # Check for collisions with environment (floors, spikes, bad guys, etc.)
         check_hit()
         
-        # Draw game
+        # Draw the game elements
         draw()
+
+    # Once state["run"] is False, the game loop ends
+    pygame.quit()  # Quit pygame
