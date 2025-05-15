@@ -25,6 +25,7 @@ This project provides entertainment through a more advanced interface using pyga
 ---
 + pygame
 + csv
++ bcrypt
 
 ## Current Features
 ---
