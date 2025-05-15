@@ -85,7 +85,7 @@ def main():
             #Sends you to platformer game if platformer button is clicked
             if platformer_button.is_clicked():
                 platformer_button_clicked = True
-                platformer()
+                platformer(username)
             if cpm_button_clicked == True or pong_button_clicked == True or platformer_button_clicked == True:
                 pass
             else:
