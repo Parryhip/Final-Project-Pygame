@@ -37,7 +37,7 @@ player = {
     "vy": 0,  # vertical velocity
     "gravity": 0.5,  # gravity value
     "max_fall_speed": 10,  # terminal velocity
-    "jump_strength": -10  # negative velocity to jump
+    "jump_strength": -20  # negative velocity to jump
 }
 
 # Game things
@@ -77,63 +77,47 @@ def make_level():
     game["spikes"] = []
     game["bad"] = []
     game["keys"] = []
-    
-    # define three base positions
-    base_positions = [
-        {"x": 100, "y": 400},  # left bottom
-        {"x": 400, "y": 300},  # middle
-        {"x": 600, "y": 400}   # right bottom
-    ]
-    
-    # random choose a base position
-    base = random.choice(base_positions)
-    
-    # Add floors with small random changes
+
     floors = []
-    # first floor (starting point)
-    floors.append(pygame.Rect(50, H - 100, 200, 20))
-    
-    # middle floor (based on base position)
-    x = base["x"] + random.randint(-20, 20)  # small random
-    y = base["y"] + random.randint(-20, 20)  # small random
-    floors.append(pygame.Rect(x, y, 200, 20))
-    
-    # third floor (to key)
-    x = x + random.randint(-30, 30)  # small random
-    y = y - 100 + random.randint(-20, 20)  # small random
-    floors.append(pygame.Rect(x, y, 200, 20))
-    
-    # floor to door
-    floors.append(pygame.Rect(W - 150, H - 150, 200, 20))
-    
+
+    # Define how many vertical layers you want (e.g., every 150 pixels)
+    layer_spacing = 150
+    num_layers = H // layer_spacing
+
+    for i in range(num_layers):
+        y = H - (i * layer_spacing) - 100  # move upward
+        num_platforms = random.randint(2, 4)  # how many platforms per layer
+
+        for _ in range(num_platforms):
+            x = random.randint(50, W - 250)
+            width = random.randint(150, 250)
+            floor = pygame.Rect(x, y, width, 20)
+            floors.append(floor)
+
+            # Optional: Add spikes
+            if random.random() < 0.2:
+                spike_x = x + random.randint(0, width - 30)
+                spike = pygame.Rect(spike_x, y + 20, 30, 30)
+                game["spikes"].append(spike)
+
+            # Optional: Add bad guys
+            if random.random() < 0.3:
+                bad_x = x + random.randint(10, width - 40)
+                bad = pygame.Rect(bad_x, y - 40, 40, 40)
+                game["bad"].append(bad)
+
+    # Sort floors from bottom to top (for finding highest platform)
+    floors.sort(key=lambda f: f.y, reverse=False)
+
     game["floors"] = floors
-    
-    # Add spikes near platforms
-    spikes = []
-    for floor in floors[1:]:  # not put spikes on the first floor
-        if random.random() < 0.3:  # 30% chance to put spikes near the floor
-            x = floor.x + random.randint(-20, 20)
-            y = floor.y + 30
-            spikes.append(pygame.Rect(x, y, 30, 30))
-    game["spikes"] = spikes
-    
-    # Add bad guys on platforms
-    bad = []
-    for floor in floors[1:]:  # not put bad guys on the first floor
-        if random.random() < 0.3:  # 30% probability to put bad guys on the floor
-            x = floor.x + random.randint(50, 150)
-            y = floor.y - 40
-            bad.append(pygame.Rect(x, y, 40, 40))
-    game["bad"] = bad
-    
+
     # Add key on the highest platform
-    highest_platform = min(floors, key=lambda p: p.y)
-    x = highest_platform.x + random.randint(50, 150)
-    y = highest_platform.y - 30
-    game["keys"] = [pygame.Rect(x, y, 30, 30)]
-    
-    # Door position
-    game["door"] = pygame.Rect(W - 50, H - 100, 40, 60)
+    highest = floors[0]
+    game["keys"].append(pygame.Rect(highest.x + 50, highest.y - 30, 30, 30))
+
+    # Place door near the bottom (or you can randomize it too)
+    game["door"] = pygame.Rect(W - 150, H - 100, 40, 60)
+
 
 def draw():
     # Draw game
@@ -291,3 +275,5 @@ def platformer(username):
         
         # Draw game
         draw()
+
+platformer("test")
