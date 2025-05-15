@@ -3,7 +3,7 @@ import csv # Import csv
 import os # import os 
 import time # time
 import random # random
-
+from leaderboard import * 
 
 
 # Start the game
@@ -11,8 +11,8 @@ pygame.init()
 font = pygame.font.Font(None, 36)
 
 # Game window
-W = 800
-H = 600
+W = 2560
+H = 1375
 win = pygame.display.set_mode((W, H))
 pygame.display.set_caption("Platformer")
 
@@ -56,51 +56,16 @@ state = {
 }
 
 # Get best score from file
-def get_best():
+def get_best(username):
     try:
-        if not os.path.exists("s\game_scores.csv"):
-            # Create new file with headers
-            with open("s\game_scores.csv", "w", newline="") as f:
-                w = csv.writer(f)
-                w.writerow(["username", "platformer"])
-            return 0
-
-        # Read scores
-        with open("s\game_scores.csv", "r") as f:
-            r = csv.reader(f)
-            next(r)  # Skip header
-            scores = []
-            for row in r:
-                if row and len(row) > 1:  # Make sure row has enough speace
-                    try:
-                        scores.append(int(row[3]))  # platformer is 4th column
-                    except:
-                        continue
-            if scores:
-                return max(scores)
-            return 0
+        return int(get_score(username, 3))  # platformer is 4th column (index 3)
     except:
         return 0
 
 # Save best score to file
-def save_best(score):
+def save_best(username, score):
     try:
-        # Read all data
-        rows = []
-        with open("s\game_scores.csv", "r") as f:
-            r = csv.reader(f)
-            rows = list(r)
-        
-        # Update score
-        if len(rows) > 1:  # If file has data
-            if int(rows[1][1]) < score:  # Update score if new score is higher
-                rows[1][1] = str(score) 
-        
-        # Write back all data
-        with open("s\game_scores.csv", "w", newline="") as f:
-            w = csv.writer(f)
-            w.writerows(rows)  # Write all rows back
-        
+        input_score(username, 3, score)  # platformer is 4th column (index 3)
     except:
         Instrustion_text8 = font.render(f"Save score failed", True, Yellow)
         win.blit(Instrustion_text8, (10, 160))
@@ -268,9 +233,10 @@ def check_hit():
                 player["life"] -= 1
                 state["safe"] = time.time() + 3
                 break
-def game_over():
+
+def game_over(username):
     if player["score"] > state["best"]:
-        save_best(player["score"])
+        save_best(username, player["score"])
     
     win.fill(Black)
     font = pygame.font.Font(None, 72)
@@ -279,9 +245,9 @@ def game_over():
     pygame.display.update()
     time.sleep(3)
 
-def platformer():
+def platformer(username):
     # Get best score
-    state["best"] = get_best()
+    state["best"] = get_best(username)
     print(f"Best: {state['best']}")
     
     # Make first level
@@ -291,7 +257,7 @@ def platformer():
     clock = pygame.time.Clock()
     while state["run"]:
         if player["life"] <= 0:
-            game_over()
+            game_over(username)
             state["run"] = False
 
         # Control speed
