@@ -110,8 +110,9 @@ def main():
             # Sends you to platformer game if platformer button is clicked
             if platformer_button.is_clicked():
                 platformer_button_clicked = True
-                platformer(username)
+                launch_game_safely(platformer, username)
                 wait_for_mouse_release(clock)
+
 
             if cpm_button_clicked or pong_button_clicked or platformer_button_clicked:
                 pass

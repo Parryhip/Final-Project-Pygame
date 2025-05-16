@@ -74,35 +74,42 @@ def save_best(username, score):
         Instrustion_text8 = font.render(f"Save score failed", True, Yellow)
         win.blit(Instrustion_text8, (10, 160))
 
-
 def show_platformer_leaderboard():
-    leaderboard = get_leaderboard(3)  # platformer is column 4, index 3
+    leaderboard = get_leaderboard(3)
     font = pygame.font.Font(None, 48)
     small_font = pygame.font.Font(None, 36)
-    
-    while True:
+    showing = True
+
+    # Button setup
+    button_text = small_font.render("Click Here to Return to Game Selection", True, White)
+    button_rect = button_text.get_rect()
+    button_rect.center = (W // 2, H - 100)
+
+    while showing:
         win.fill(Black)
-        
+
         title_text = font.render("Platformer Leaderboard (Top 10)", True, Yellow)
         win.blit(title_text, (W // 2 - title_text.get_width() // 2, 100))
-        
+
         y_start = 200
-        for i, (name, score) in enumerate(leaderboard):
+        for i, (name, score) in enumerate(leaderboard[:10]):
             entry_text = small_font.render(f"{i+1}. {name} : {score}", True, White)
             win.blit(entry_text, (W // 2 - entry_text.get_width() // 2, y_start + i * 40))
 
-        instruction_text = small_font.render("Press Enter to return to Game Selection", True, White)
-        win.blit(instruction_text, (W // 2 - instruction_text.get_width() // 2, H - 100))
+        # Draw button
+        pygame.draw.rect(win, Blue, button_rect.inflate(20, 10))  # button background with padding
+        win.blit(button_text, button_rect)
 
         pygame.display.flip()
-        
+        pygame.time.wait(10)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                return
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if button_rect.collidepoint(event.pos):
+                    showing = False
 
 def make_level():
     # Clear old things
@@ -256,35 +263,61 @@ def check_hit():
                 player["knockback_y"] = -5  # slight upward bump
                 break
 def game_over(username):
-    # If the player score is greater than the best score, save it
-    if player["score"] > state["best"]:
-        save_best(username, player["score"])
-    
-    win.fill(Black)
     font = pygame.font.Font(None, 72)
     text = font.render("Game Over", True, Red)
-    win.blit(text, (W//2 - text.get_width()//2, H//2 - text.get_height()//2))
-    pygame.display.update()
-    time.sleep(3)
 
-    # Show the leaderboard after the game over screen
-    show_platformer_leaderboard()
+    while True:
+        win.fill(Black)
+        win.blit(text, (W // 2 - text.get_width() // 2, H // 2 - text.get_height() // 2))
+        instruction = font.render("Press Enter to view leaderboard", True, Yellow)
+        win.blit(instruction, (W // 2 - instruction.get_width() // 2, H // 2 + 100))
+        pygame.display.update()
 
-    # After leaderboard screen, set game state to False to stop the loop
-    state["run"] = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                if player["score"] > state["best"]:
+                    save_best(username, player["score"])
+                show_platformer_leaderboard()
+                state["run"] = False
+                return
 
 
 def platformer(username):
-    # Get the best score for the player
+    # Reset game state
+    state["run"] = True
+    state["safe"] = 0
     state["best"] = get_best(username)
-    print(f"Best: {state['best']}")
-    
+
+    # Reset player state
+    player.update({
+        "x": 50,
+        "y": H - 50,
+        "w": 30,
+        "h": 30,
+        "speed": 5,
+        "jump": random.randint(1, 20),
+        "life": 3,
+        "score": 0,
+        "keys": [],
+        "jump_on": False,
+        "vy": 0,
+        "gravity": 0.5,
+        "max_fall_speed": 10,
+        "jump_strength": -20,
+        "hit_timer": 0,
+        "knockback_x": 0,
+        "knockback_y": 0
+    })
+
     # Make the first level
     make_level()
-    
+
     # Start game clock
     clock = pygame.time.Clock()
-    
+        
     # Start the game loop
     while state["run"]:
         if player["life"] <= 0:
@@ -335,4 +368,3 @@ def platformer(username):
         draw()
 
     # Once state["run"] is False, the game loop ends
-    pygame.quit()  # Quit pygame
